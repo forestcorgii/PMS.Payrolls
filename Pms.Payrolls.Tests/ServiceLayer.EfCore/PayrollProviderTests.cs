@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Pms.Payrolls.Tests;
 using Pms.Payrolls.Domain.Services;
 using Pms.Payrolls.Domain;
+using static Pms.Payrolls.Domain.Enums;
 
 namespace Pms.Payrolls.ServiceLayer.EfCore.Tests
 {
@@ -23,14 +24,26 @@ namespace Pms.Payrolls.ServiceLayer.EfCore.Tests
             _payrollProvider = new PayrollProvider(_factory);
         }
 
-        [Fact()]
-        public void ShouldGetAccuratePayrolls()
+        [Theory]
+        [InlineData("2208-2", BankChoices.LBP)]
+        public void ShouldGetAccuratePayrollsByCutoffIdAndBankType(string cutoffId, BankChoices bank)
         {
-            IEnumerable<Payroll> payrolls =  _payrollProvider.GetPayrolls("2208-1", Domain.Enums.BankType.LBP);
-
-            Assert.NotEmpty(payrolls);
+            _payrollProvider.GetPayrolls(cutoffId,bank);
         }
 
+        [Theory]
+        [InlineData("2208-2", "P1A",BankChoices.LBP)]
+        public void ShouldGetAccuratePayrollsByCutoffIdPayrollCodeAndBankType(string cutoffId,string payrollCode,BankChoices bank)
+        {
+            _payrollProvider.GetPayrolls(cutoffId, payrollCode, bank);
+        }
+
+        [Theory]
+        [InlineData(2022,"")]
+        public void ShouldGetAccuratePayrollsByYearsCovoredAndCompanyId(int yearsCovered, string companyId)
+        {
+            _payrollProvider.GetPayrolls(yearsCovered, companyId);
+        }
 
     }
 }

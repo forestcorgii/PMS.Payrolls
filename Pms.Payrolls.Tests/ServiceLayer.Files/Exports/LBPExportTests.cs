@@ -13,6 +13,7 @@ using Pms.Payrolls.Tests;
 using Pms.Payrolls.ServiceLayer.EfCore;
 using Pms.Payrolls.ServiceLayer.Files.Exports;
 using static Pms.Payrolls.Domain.Enums;
+using Pms.Payrolls.ServiceLayer.Files.Exports.Bank_Report;
 
 namespace Pms.Payrolls.Files.Exports.Tests
 {
@@ -30,10 +31,13 @@ namespace Pms.Payrolls.Files.Exports.Tests
         [Fact()]
         public void ShouldExportPayroll()
         {
-            string cutoffId = "2208-1";
-            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, BankType.LBP);
-            LBPExport export = new();
-            export.StartExport(payrolls.ToArray(), cutoffId, "IDCSI");
+            string cutoffId = "2208-2";
+            string payrollCode = "P1A";
+            BankChoices bankType = BankChoices.LBP;
+            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, payrollCode, bankType);
+
+            BankReportBase exporter = new(bankType);
+            exporter.StartExport(payrolls.ToArray(), cutoffId, payrollCode);
         }
     }
 }

@@ -9,56 +9,121 @@ using System.Linq;
 
 namespace Pms.Payrolls.ServiceLayer.Files.Exports
 {
-    public class LBPExport 
+    public class LBPExporter : IExportBankReportService
     {
 
-        public void StartExport(IEnumerable<Payroll> payrolls, string cutoffId, string companyName)
+        public void StartExport(IEnumerable<Payroll> payrolls, string cutoffId, string payrollCode)
         {
             Cutoff cutoff = new Cutoff(cutoffId);
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
-            string filePath = $@"{startupPath}\EXPORT\LBP";
+            string filePath = $@"{startupPath}\EXPORT\{cutoffId}\{payrollCode}\BANK REPORT\LBP";
             Directory.CreateDirectory(filePath);
             string templatePath = $@"{startupPath}\TEMPLATES\TEMPLATE-LBP.xls";
 
-            string filename = $"{companyName}_{cutoff.CutoffDate:yyyyMMdd}-LBP".AppendFile(filePath);
+            string filename = $"{payrollCode}_{cutoff.CutoffDate:yyyyMMdd}-LBP".AppendFile(filePath);
             File.Copy(templatePath, filename);
 
-            GenerateXls(filename, payrolls.ToArray());
+            payrolls = payrolls.OrderBy(p => p.EE.Fullname);
+            IEnumerable<Payroll> validPayrolls = payrolls.Where(p => !(p.EE is null || p.EE.AccountNumber == "" || p.EE.CardNumber == ""));
+            IEnumerable<Payroll> invalidPayrolls = payrolls.Where(p => p.EE is null || p.EE.AccountNumber == "" || p.EE.CardNumber == "");
 
-            GenerateCsvandDat(filename, payrolls.Count());
-        }   
+            GenerateXls(filename, validPayrolls.ToArray(), invalidPayrolls.ToArray());
+            GenerateCsvandDat(filename, validPayrolls.Count(), payrollCode);
+        }
 
-        private void GenerateXls(string filename, Payroll[] payrolls)
+        private static void GenerateXls(string filename, Payroll[] payrolls, Payroll[] invalidPayrolls)
         {
             IWorkbook nWorkbook;
             using (var nTemplateFile = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
                 nWorkbook = new HSSFWorkbook(nTemplateFile);
             ISheet nSheet = nWorkbook.GetSheetAt(0);
 
-            for (int i = 0; i < payrolls.Length; i++)
-            {
-                Payroll payroll = payrolls[i];
-                IRow row = nSheet.GetRow(i + 2);
-                if (payroll.EE is not null)
-                {
-                    row.CreateCell(0).SetCellValue(payroll.EE.CardNumber);
-                    row.CreateCell(1).SetCellValue(payroll.EE.AccountNumber);
-                }
-                else
-                {
-                    row.CreateCell(0).SetCellValue(0);
-                    row.CreateCell(1).SetCellValue(0);
-                }
-                row.CreateCell(6).SetCellValue(payroll.NetPay);
-            }
+            WritePayrollToOriginalSheet(payrolls, nSheet);
+            nSheet = nWorkbook.GetSheetAt(1);
+            WriteValidPayrollToSheet(payrolls, nSheet);
+            nSheet = nWorkbook.GetSheetAt(2);
+            WriteInvalidPayrollToSheet(invalidPayrolls, nSheet);
 
             using (var nReportFile = new FileStream(filename, FileMode.Open, FileAccess.Write))
                 nWorkbook.Write(nReportFile);
+        }
+        private static void WritePayrollToOriginalSheet(Payroll[] validayrolls, ISheet sheet)
+        {
+            if (validayrolls.Length > 0)
+            {
+                IRow row;
+                for (int i = 0; i < validayrolls.Length; i++)
+                {
+                    Payroll payroll = validayrolls[i];
+                    row = sheet.GetRow(i + 2);
+                    row.GetCell(0).SetCellValue(payroll.EE.CardNumber);
+                    row.GetCell(1).SetCellValue(payroll.EE.AccountNumber);
+                    row.GetCell(6).SetCellValue(payroll.NetPay * 100);
+                }
+            }
+        }
 
+        private static void WriteValidPayrollToSheet(Payroll[] validayrolls, ISheet sheet)
+        {
+            if (validayrolls.Length > 0)
+            {
+                IRow row;
+                for (int i = 0; i < validayrolls.Length; i++)
+                {
+                    Payroll payroll = validayrolls[i];
+                    row = sheet.CreateRow(i + 2);
+                    row.CreateCell(0).SetCellValue(payroll.EEId);
+                    row.CreateCell(1).SetCellValue(payroll.EE.Fullname);
+                    row.CreateCell(2).SetCellValue(payroll.EE.CardNumber);
+                    row.CreateCell(3).SetCellValue(payroll.EE.AccountNumber);
+                    row.CreateCell(4).SetCellValue(payroll.NetPay);
+                }
+
+                row = sheet.CreateRow(validayrolls.Length + 2);
+                row.CreateCell(0).SetCellValue("TOTAL");
+                row.CreateCell(4).SetCellValue(validayrolls.Sum(p => p.NetPay));
+
+
+                row = sheet.CreateRow(validayrolls.Length + 6);
+                row.CreateCell(1).SetCellValue("Prepared By:");
+                row.CreateCell(2).SetCellValue("Noted By:");
+                row.CreateCell(3).SetCellValue("Approved By:");
+
+                row = sheet.CreateRow(validayrolls.Length + 8);
+                row.CreateCell(1).SetCellValue("");
+                row.CreateCell(2).SetCellValue("Arlyn C. Esmenda");
+                row.CreateCell(3).SetCellValue("Francis Ann B. Petilla");
+            }
+        }
+
+        private static void WriteInvalidPayrollToSheet(Payroll[] invalidPayrolls, ISheet sheet)
+        {
+            if (invalidPayrolls.Length > 0)
+            {
+                IRow row;
+                for (int i = 0; i < invalidPayrolls.Length; i++)
+                {
+                    Payroll payroll = invalidPayrolls[i];
+                    row = sheet.CreateRow(i + 2);
+                    row.CreateCell(0).SetCellValue(payroll.EEId);
+                    if (payroll.EE is not null)
+                    {
+                        row.CreateCell(1).SetCellValue(payroll.EE.Fullname);
+                        row.CreateCell(2).SetCellValue(payroll.EE.CardNumber);
+                        row.CreateCell(3).SetCellValue(payroll.EE.AccountNumber);
+                    }
+                    row.CreateCell(4).SetCellValue(payroll.NetPay);
+                }
+
+                row = sheet.CreateRow(invalidPayrolls.Length + 3);
+                row.CreateCell(0).SetCellValue("TOTAL");
+                row.CreateCell(4).SetCellValue(invalidPayrolls.Sum(p => p.NetPay));
+            }
         }
 
 
-        private void GenerateCsvandDat(string filename, int payrollCount)
+
+        private static void GenerateCsvandDat(string filename, int payrollCount, string payrollCode)
         {
             IWorkbook nWorkbook;
             using (var nTemplateFile = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite))
@@ -71,19 +136,19 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             string footerInitial = "FT";
             string datFileInitial = "TXU";
             string bankCode = "019372";
-            string timestamp = DateTime.Now.ToString("ddMMYYYYHHmmss");
+            DateTime timestamp = DateTime.Now;
             string versionNumber = "2.0";
             int totalRecords = payrollCount;
 
             using (var streamWriter = new StreamWriter(csvFilename))
             {
-                streamWriter.WriteLine($"{headerInitial}{bankCode}{timestamp}{versionNumber}");
+                streamWriter.WriteLine($"{headerInitial}{bankCode}{timestamp:ddMMyyyyHHmmss}{versionNumber}");
 
                 for (int i = 0; i < totalRecords; i++)
                 {
                     IRow row = nSheet.GetRow(i + 2);
 
-                    string item = row.GetCell(0).GetValue( formulator);
+                    string item = row.GetCell(0).GetValue(formulator);
                     for (int j = 1; j < 26; j++)
                         item += $"|{row.GetCell(j).GetValue(formulator)}";
                     streamWriter.WriteLine(item);
@@ -92,7 +157,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                 streamWriter.WriteLine($"{footerInitial}{totalRecords:000000000}");
             }
 
-            string datFilename = $@"{Path.GetDirectoryName(filename)}\{datFileInitial}{bankCode}{timestamp}.dat";
+            string datFilename = $@"{Path.GetDirectoryName(filename)}\{payrollCode}_{datFileInitial}{bankCode}{timestamp:ddMMyyHHmmss}.dat";
             File.Copy(csvFilename, datFilename);
 
             if (!File.Exists(filename))

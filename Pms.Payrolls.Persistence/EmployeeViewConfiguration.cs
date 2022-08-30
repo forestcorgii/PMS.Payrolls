@@ -15,13 +15,13 @@ namespace Pms.Payrolls.Persistence
         {
             builder.ToView("masterlist").HasKey(ee => ee.EEId);
 
-            builder.Property(cc => cc.EEId).HasColumnType("VARCHAR(8)").IsRequired();
-            builder.Property(cc => cc.FirstName).HasColumnType("VARCHAR(45)");
-            builder.Property(cc => cc.LastName).HasColumnType("VARCHAR(45)");
-            builder.Property(cc => cc.MiddleName).HasColumnType("VARCHAR(45)");
-            builder.Property(cc => cc.Location).HasColumnType("VARCHAR(45)");
-            builder.Property(cc => cc.PayrollCode).HasColumnType("VARCHAR(45)");
-            builder.Property(cc => cc.BankCategory).HasColumnType("VARCHAR(45)");
+            //builder.Property(cc => cc.EEId).HasColumnType("VARCHAR(8)").IsRequired();
+            //builder.Property(cc => cc.FirstName).HasColumnType("VARCHAR(45)");
+            //builder.Property(cc => cc.LastName).HasColumnType("VARCHAR(45)");
+            //builder.Property(cc => cc.MiddleName).HasColumnType("VARCHAR(45)");
+            //builder.Property(cc => cc.Location).HasColumnType("VARCHAR(45)");
+            //builder.Property(cc => cc.PayrollCode).HasColumnType("VARCHAR(45)");
+            //builder.Property(cc => cc.BankCategory).HasColumnType("VARCHAR(45)");
         }
     }
 }

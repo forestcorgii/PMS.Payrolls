@@ -37,10 +37,10 @@ namespace Pms.Payrolls.Tests
             Cutoff cutoff = new();
             List<Payroll> payrolls = new()
             {
-                GenerateSeedPayroll("DYYJ", cutoff.CutoffId, BankType.LBP, 10000, 10000, 10000, 1000, -500, -1000),
-                GenerateSeedPayroll("DYYZ", cutoff.CutoffId, BankType.LBP, 10000, 10000, 10000, 1000, -500, -1000),
-                GenerateSeedPayroll("DYYN", cutoff.CutoffId, BankType.LBP, 10000, 10000, 10000, 1000, -500, -1000),
-                GenerateSeedPayroll("DYYK", cutoff.CutoffId, BankType.LBP, 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYJ", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYZ", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYN", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYK", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
             };
 
             foreach (Payroll payroll in payrolls)

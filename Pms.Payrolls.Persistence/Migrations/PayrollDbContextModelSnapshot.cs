@@ -16,34 +16,70 @@ namespace Pms.Payrolls.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.17");
 
+            modelBuilder.Entity("Pms.Payrolls.Domain.Company", b =>
+                {
+                    b.Property<string>("CompanyId")
+                        .HasColumnType("VARCHAR(35)");
+
+                    b.Property<string>("Acronym")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(10)");
+
+                    b.Property<string>("BranchCode")
+                        .HasColumnType("VARCHAR(10)");
+
+                    b.Property<double>("MinimumRate")
+                        .HasColumnType("DOUBLE(6,2)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("VARCHAR(10)");
+
+                    b.Property<string>("RegisteredName")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("Site")
+                        .HasColumnType("VARCHAR(20)");
+
+                    b.Property<string>("TIN")
+                        .HasColumnType("VARCHAR(20)");
+
+                    b.HasKey("CompanyId");
+
+                    b.ToTable("company");
+                });
+
             modelBuilder.Entity("Pms.Payrolls.Domain.EmployeeView", b =>
                 {
                     b.Property<string>("EEId")
-                        .HasColumnType("VARCHAR(8)");
+                        .HasColumnType("varchar(767)");
 
                     b.Property<string>("AccountNumber")
                         .HasColumnType("text");
 
                     b.Property<string>("BankCategory")
-                        .HasColumnType("VARCHAR(45)");
+                        .HasColumnType("text");
 
                     b.Property<string>("CardNumber")
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("VARCHAR(45)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("VARCHAR(45)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Location")
-                        .HasColumnType("VARCHAR(45)");
+                        .HasColumnType("text");
 
                     b.Property<string>("MiddleName")
-                        .HasColumnType("VARCHAR(45)");
+                        .HasColumnType("text");
 
                     b.Property<string>("PayrollCode")
-                        .HasColumnType("VARCHAR(45)");
+                        .HasColumnType("text");
+
+                    b.Property<string>("TIN")
+                        .HasColumnType("text");
 
                     b.HasKey("EEId");
 
@@ -70,6 +106,10 @@ namespace Pms.Payrolls.Persistence.Migrations
                     b.Property<string>("BankCategory")
                         .HasColumnType("VARCHAR(6)");
 
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(35)");
+
                     b.Property<string>("CutoffId")
                         .IsRequired()
                         .HasColumnType("VARCHAR(20)");
@@ -78,14 +118,32 @@ namespace Pms.Payrolls.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(8)");
 
+                    b.Property<double>("EmployeePagibig")
+                        .HasColumnType("DOUBLE(9,2)");
+
+                    b.Property<double>("EmployeePhilHealth")
+                        .HasColumnType("DOUBLE(9,2)");
+
+                    b.Property<double>("EmployeeSSS")
+                        .HasColumnType("DOUBLE(9,2)");
+
                     b.Property<double>("GovernmentTotal")
                         .HasColumnType("DOUBLE(9,2)");
 
                     b.Property<double>("GrossPay")
                         .HasColumnType("DOUBLE(9,2)");
 
+                    b.Property<double>("HolidayOvertime")
+                        .HasColumnType("DOUBLE(6,2)");
+
                     b.Property<double>("NetPay")
                         .HasColumnType("DOUBLE(9,2)");
+
+                    b.Property<double>("NightDifferential")
+                        .HasColumnType("DOUBLE(6,2)");
+
+                    b.Property<double>("Overtime")
+                        .HasColumnType("DOUBLE(6,2)");
 
                     b.Property<string>("PayrollCode")
                         .HasColumnType("VARCHAR(6)");
@@ -94,6 +152,12 @@ namespace Pms.Payrolls.Persistence.Migrations
                         .HasColumnType("DOUBLE(6,2)");
 
                     b.Property<double>("RegPay")
+                        .HasColumnType("DOUBLE(9,2)");
+
+                    b.Property<double>("RestDayOvertime")
+                        .HasColumnType("DOUBLE(6,2)");
+
+                    b.Property<double>("WithholdingTax")
                         .HasColumnType("DOUBLE(9,2)");
 
                     b.Property<int>("YearCovered")
@@ -106,6 +170,54 @@ namespace Pms.Payrolls.Persistence.Migrations
                     b.ToTable("payroll");
                 });
 
+            modelBuilder.Entity("Pms.Payrolls.Domain.TimesheetView", b =>
+                {
+                    b.Property<string>("TimesheetId")
+                        .HasColumnType("VARCHAR(35)")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("BankCategory")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CutoffId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EEId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Id")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(35)");
+
+                    b.Property<string>("PayrollCode")
+                        .HasColumnType("text");
+
+                    b.Property<double>("TotalHOT")
+                        .HasColumnType("double");
+
+                    b.Property<double>("TotalHours")
+                        .HasColumnType("double");
+
+                    b.Property<double>("TotalND")
+                        .HasColumnType("double");
+
+                    b.Property<double>("TotalOT")
+                        .HasColumnType("double");
+
+                    b.Property<double>("TotalRDOT")
+                        .HasColumnType("double");
+
+                    b.Property<double>("TotalTardy")
+                        .HasColumnType("double");
+
+                    b.HasKey("TimesheetId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToView("timesheet");
+                });
+
             modelBuilder.Entity("Pms.Payrolls.Domain.Payroll", b =>
                 {
                     b.HasOne("Pms.Payrolls.Domain.EmployeeView", "EE")
@@ -115,6 +227,20 @@ namespace Pms.Payrolls.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("EE");
+                });
+
+            modelBuilder.Entity("Pms.Payrolls.Domain.TimesheetView", b =>
+                {
+                    b.HasOne("Pms.Payrolls.Domain.Payroll", null)
+                        .WithOne("TS")
+                        .HasForeignKey("Pms.Payrolls.Domain.TimesheetView", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Pms.Payrolls.Domain.Payroll", b =>
+                {
+                    b.Navigation("TS");
                 });
 #pragma warning restore 612, 618
         }

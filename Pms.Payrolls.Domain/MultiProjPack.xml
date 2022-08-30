@@ -3,7 +3,7 @@
 <!-- this contains the typical information you should have in your settings -->
   <metadata>
     <id>Pms.Payrolls</id>
-    <version>1.0.0-preview002</version>
+    <version>1.0.0-preview003</version>
     <authors>you must give a list of author(s)</authors>
     <description>you must provide a description of the NuGet</description>
     <releaseNotes>optional: what is changed in this release?</releaseNotes>

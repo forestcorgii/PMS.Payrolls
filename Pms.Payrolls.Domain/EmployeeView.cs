@@ -22,7 +22,8 @@ namespace Pms.Payrolls.Domain
                 return _fullName;
             }
         }
-        
+        public string TIN { get; private set; }
+
         public string Location { get; private set; }
 
         public string PayrollCode { get; private set; }

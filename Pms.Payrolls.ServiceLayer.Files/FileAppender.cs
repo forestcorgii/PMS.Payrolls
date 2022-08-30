@@ -44,7 +44,13 @@ namespace Pms.Payrolls.ServiceLayer.Files
                         ICellStyle style = cell.CellStyle;
                         string format = style.GetDataFormatString();
                         if (format != "General")
-                            return numericValue.ToString(format.Replace(")", "").Replace("(", "").Replace("_", "").Split(";")[0]);
+                            return numericValue.ToString(format
+                                .Replace("*", "")
+                                .Replace(")", "")
+                                .Replace("(", "")
+                                .Replace("_", "")
+                                .Split(";")[0]
+                                );
                         return cell.NumericCellValue.ToString();
                     }
                 case CellType.Formula:

@@ -18,27 +18,81 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             _factory = factory;
         }
 
-        public IEnumerable<Payroll> GetPayrolls(string cutoffId, BankType bank)
-        {
-            using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls
-                .Where(p => p.CutoffId == cutoffId)
-                .Where(p => p.Bank == bank)
-                .ToList();
-        }
-        public IEnumerable<Payroll> GetPayrolls(int yearsCovered, BankType bank)
-        {
-            using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls
-                .Where(p => p.YearCovered == yearsCovered)
-                .Where(p => p.Bank == bank)
-                .ToList();
-        }
-
         public IEnumerable<Payroll> GetAllPayrolls()
         {
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls.ToList();
+        }
+
+
+        public IEnumerable<Payroll> GetPayrolls(string cutoffId)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Include(p => p.TS)
+                .Where(p => p.CutoffId == cutoffId)
+                .ToList();
+        }
+        public IEnumerable<Payroll> GetPayrolls(string cutoffId, BankChoices bank)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Include(p => p.TS)
+                .Where(p => p.CutoffId == cutoffId)
+                .Where(p => p.Bank == bank)
+                .ToList();
+        }
+        public IEnumerable<Payroll> GetPayrolls(int yearsCovered, BankChoices bank)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Include(p => p.TS)
+                .Where(p => p.YearCovered == yearsCovered)
+                .Where(p => p.Bank == bank)
+                .ToList();
+        }
+        public IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Include(p => p.TS)
+                .Where(p => p.YearCovered == yearsCovered)
+                .Where(p => p.CompanyId == companyId)
+                .ToList();
+        }
+        public IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode, BankChoices bankType)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Include(p => p.TS)
+                .Where(p => p.CutoffId == cutoffId)
+                .Where(p => p.PayrollCode == payrollCode)
+                .Where(p => p.Bank == bankType)
+                .ToList();
+        }
+
+
+        public IEnumerable<Payroll> GetNoEEPayrolls()
+        {
+            PayrollDbContext Context = _factory.CreateDbContext();
+            IEnumerable<Payroll> validPayrolls = Context.Payrolls
+                .Include(ts => ts.EE);
+            IEnumerable<Payroll> payrolls = Context.Payrolls;
+            payrolls = payrolls.Except(validPayrolls);
+            Console.WriteLine(payrolls.Count());
+
+            return payrolls;
+        }
+
+        public IEnumerable<Company> GetAllCompanies()
+        {
+            PayrollDbContext Context = _factory.CreateDbContext();
+            return Context.Companies.ToList();
         }
 
     }
