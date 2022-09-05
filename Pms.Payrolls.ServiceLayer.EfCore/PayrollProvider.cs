@@ -41,7 +41,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Include(p => p.EE)
                 .Include(p => p.TS)
                 .Where(p => p.CutoffId == cutoffId)
-                .Where(p => p.Bank == bank)
+                .Where(p => p.EE.Bank == bank)
                 .ToList();
         }
         public IEnumerable<Payroll> GetPayrolls(int yearsCovered, BankChoices bank)
@@ -51,7 +51,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Include(p => p.EE)
                 .Include(p => p.TS)
                 .Where(p => p.YearCovered == yearsCovered)
-                .Where(p => p.Bank == bank)
+                .Where(p => p.EE.Bank == bank)
                 .ToList();
         }
         public IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId)
@@ -72,7 +72,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Include(p => p.TS)
                 .Where(p => p.CutoffId == cutoffId)
                 .Where(p => p.PayrollCode == payrollCode)
-                .Where(p => p.Bank == bankType)
+                .Where(p => p.EE.Bank == bankType)
                 .ToList();
         }
 

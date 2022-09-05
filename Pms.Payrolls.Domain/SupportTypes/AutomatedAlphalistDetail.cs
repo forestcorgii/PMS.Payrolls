@@ -16,8 +16,8 @@ namespace Pms.Payrolls.Domain.SupportTypes
         private string MiddleName;
         private string TIN;
 
-        private DateTime StartDate;
-        private DateTime ResignationDate;
+        private string StartDate;
+        private string ResignationDate;
         private string Nationality { get; set; }
         private string ReasonForSeparation { get; set; }
         private string EmploymentStatus { get; set; }
@@ -178,8 +178,8 @@ namespace Pms.Payrolls.Domain.SupportTypes
             EmploymentStatus = "R";
             ReasonForSeparation = "";
 
-            StartDate = yearlyPayrolls.First().Cutoff.CutoffDate;
-            ResignationDate = yearlyPayrolls.Last().Cutoff.CutoffDate;
+            StartDate = yearlyPayrolls.First().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
+            ResignationDate = yearlyPayrolls.Last().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
 
 
             Overtime = yearlyPayrolls.Sum(py => py.Overtime);
@@ -187,7 +187,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
             HolidayOvertime = yearlyPayrolls.Sum(py => py.HolidayOvertime);
             NightDifferential = yearlyPayrolls.Sum(py => py.NightDifferential);
 
-            RegularPay = yearlyPayrolls.Sum(py => py.RegPay);
+            RegularPay = yearlyPayrolls.Sum(py => py.RegularPay);
             GrossPay = yearlyPayrolls.Sum(py => py.GrossPay);
             NetPay = yearlyPayrolls.Sum(py => py.NetPay);
 
@@ -207,13 +207,13 @@ namespace Pms.Payrolls.Domain.SupportTypes
         {
             AlphalistDetail a = new();
             a.EEId = EEId;
-            a.Company = Company;
+            //a.Company = Company;
             a.FirstName = FirstName;
             a.LastName = LastName;
             a.MiddleName = MiddleName;
             a.Tin = TIN;
-            a.StartDate = StartDate;
-            a.ResignationDate = ResignationDate;
+            a.StartDate =DateTime.Parse( StartDate);
+            a.ResignationDate = DateTime.Parse(ResignationDate);
             a.AcutalAmountWithheld = AcutalAmountWithheld;
             a.FactorUsed = FactorUsed;
             a.PresentTaxableSalary = PresentTaxableSalary;

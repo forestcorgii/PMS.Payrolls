@@ -19,5 +19,10 @@ namespace Pms.Payrolls.Domain
         public double MinimumRate { get; set; }
 
         public static string GenerateId(Company company) => $"{company.Site}{company.Acronym}{company.BranchCode}";
+
+        public override string ToString()
+        {
+            return CompanyId;
+        }
     }
 }

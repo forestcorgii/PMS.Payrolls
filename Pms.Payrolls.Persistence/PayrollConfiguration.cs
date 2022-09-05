@@ -23,7 +23,6 @@ namespace Pms.Payrolls.Persistence
             builder.Property(cc => cc.YearCovered).HasColumnType("INT(4)").IsRequired();
 
             builder.Property(cc => cc.PayrollCode).HasColumnType("VARCHAR(6)");
-            builder.Property(cc => cc.BankCategory).HasColumnType("VARCHAR(6)");
 
             builder.Property(cc => cc.RegHours).HasColumnType("DOUBLE(6,2)").IsRequired();
             builder.Property(cc => cc.Overtime).HasColumnType("DOUBLE(6,2)").IsRequired();
@@ -33,7 +32,7 @@ namespace Pms.Payrolls.Persistence
             builder.Property(cc => cc.AbsTar).HasColumnType("DOUBLE(6,2)").IsRequired();
 
             builder.Property(cc => cc.GrossPay).HasColumnType("DOUBLE(9,2)").IsRequired();
-            builder.Property(cc => cc.RegPay).HasColumnType("DOUBLE(9,2)").IsRequired();
+            builder.Property(cc => cc.RegularPay).HasColumnType("DOUBLE(9,2)").IsRequired();
             builder.Property(cc => cc.NetPay).HasColumnType("DOUBLE(9,2)").IsRequired();
             builder.Property(cc => cc.EmployeeSSS).HasColumnType("DOUBLE(9,2)").IsRequired();
             builder.Property(cc => cc.EmployeePhilHealth).HasColumnType("DOUBLE(9,2)").IsRequired();

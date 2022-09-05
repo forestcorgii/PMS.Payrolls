@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using Pms.Payrolls.Domain;
+using Pms.Payrolls.Domain.Exceptions;
 using Pms.Payrolls.Domain.Services;
 using System;
 using System.Collections;
@@ -30,24 +31,50 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
         private int WithholdingTaxIndex = -1;
 
-        DateTime cutoffDate { get; set; }
+        private DateTime CutoffDate { get; set; }
+
+        private string PayrollRegisterFilePath { get; set; }
 
         public void ValidatePayRegisterFile()
         {
+            if (EEIdIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Employee ID",PayrollRegisterFilePath);
+            if (RegularHoursIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Regular Hours",PayrollRegisterFilePath);
+            if (OvertimeIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Overtime",PayrollRegisterFilePath);
+            if (RestDayOvertimeIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Restdat Overtime",PayrollRegisterFilePath);
+            if (HolidayOvertimeIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Holiday Overtime",PayrollRegisterFilePath);
+            if (NightDifferentialIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Night Differential",PayrollRegisterFilePath);
+            if (AbsentAndTardyIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "AbsTar",PayrollRegisterFilePath);
+            
+            if (RegularPayIndex== -1) throw new PayrollRegisterHeaderNotFoundException( "Regular Pay", PayrollRegisterFilePath);
+            if (GrossIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Gross Pay", PayrollRegisterFilePath);
+            if (NetPayIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Net Pay", PayrollRegisterFilePath);
+            
+            if (EmployeeSSSIndex == -1) throw new PayrollRegisterHeaderNotFoundException("SSS EE", PayrollRegisterFilePath);
+            if (EmployeePagibigIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Pagibig EE", PayrollRegisterFilePath);
+            if (EmployeePhilHealthIndex == -1) throw new PayrollRegisterHeaderNotFoundException("PhilHealth EE", PayrollRegisterFilePath);
+
+            if (WithholdingTaxIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Withholding Tax",PayrollRegisterFilePath);
+
+            if (CutoffDate == default) throw new PayrollRegisterHeaderNotFoundException("Cutoff Date", PayrollRegisterFilePath);
         }
 
 
-        public IEnumerable<Payroll> StartImport(string payRegisterFilePath)
+        public IEnumerable<Payroll> StartImport(string payrollRegisterFilePath)
         {
+            PayrollRegisterFilePath = payrollRegisterFilePath;
+
             List<Payroll> payrolls = new();
-            using (var stream = File.Open(payRegisterFilePath, FileMode.Open, FileAccess.Read))
+            using (var stream = File.Open(PayrollRegisterFilePath, FileMode.Open, FileAccess.Read))
             {
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     FindHeaders(reader);
                     FindPayrollDate(reader);
-                    Cutoff cutoff = new Cutoff(cutoffDate);
+
+                    ValidatePayRegisterFile();
+
+                    Cutoff cutoff = new Cutoff(CutoffDate);
                     do
                     {
                         string employee_id = "";
@@ -65,7 +92,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                             YearCovered = cutoff.YearCovered,
                         };
 
-                        newPayroll.RegPay = reader.GetDouble(RegularPayIndex);
+                        newPayroll.RegularPay = reader.GetDouble(RegularPayIndex);
                         newPayroll.GrossPay = reader.GetDouble(GrossIndex);
                         newPayroll.NetPay = reader.GetDouble(NetPayIndex);
 
@@ -85,7 +112,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                         }
 
                         newPayroll.PayrollId = Payroll.GenerateId(newPayroll);
-
+                        newPayroll.UpdateValues();
                         payrolls.Add(newPayroll);
                     } while (reader.Read());
                 }
@@ -153,7 +180,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
         }
         private void CheckCutoffDate(IExcelDataReader reader)
         {
-            if (cutoffDate == default)
+            if (CutoffDate == default)
             {
                 string payrollDateRaw = "";
                 if (reader.GetValue(0) is not null)
@@ -162,7 +189,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                     payrollDateRaw = reader.GetString(1).Trim().Replace("*", "").Trim();
 
                 if (payrollDateRaw != "")
-                    cutoffDate = DateTime.ParseExact(payrollDateRaw, "dd MMMM yyyy", CultureInfo.InvariantCulture);
+                    CutoffDate = DateTime.ParseExact(payrollDateRaw, "dd MMMM yyyy", CultureInfo.InvariantCulture);
             }
         }
 

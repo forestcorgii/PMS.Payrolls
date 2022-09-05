@@ -24,14 +24,13 @@ namespace Pms.Payrolls.Files.Tests
         public void ShouldImportPayroll()
         {
             IImportPayrollService payregImporter = new PayrollRegisterImportBase(Enums.ImportProcessChoices.KS);
-            string payregFilePath = $@"{ AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\PayRegisterImportTests\K13202208B.XLS";
+            string payregFilePath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\PayRegisterImportTests\K13202208B.XLS";
             List<Payroll> actualPayrolls = payregImporter.StartImport(payregFilePath).ToList();
 
             Assert.NotNull(actualPayrolls);
             Assert.NotEmpty(actualPayrolls);
             Assert.True(actualPayrolls[0].RegHours > 0);
         }
-
 
         [Fact()]
         public void ShouldImportK12Payroll()

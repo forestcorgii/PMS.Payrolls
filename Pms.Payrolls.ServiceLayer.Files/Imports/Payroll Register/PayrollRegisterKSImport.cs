@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using Pms.Payrolls.Domain;
+using Pms.Payrolls.Domain.Exceptions;
 using Pms.Payrolls.Domain.Services;
 using System;
 using System.Collections;
@@ -21,25 +22,40 @@ namespace Pms.Payrolls.ServiceLayer.Files
         private int EmployeePagibigIndex = -1;
         private int EmployeePhilHealthIndex = -1;
 
+        private string PayrollRegisterFilePath;
 
         DateTime CutoffDate { get; set; }
 
         public void ValidatePayRegisterFile()
         {
+            if (NameIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Name", PayrollRegisterFilePath);
+            if(RegularHoursIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Regular Hours", PayrollRegisterFilePath);
+            if (GrossPayIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Gross Pay", PayrollRegisterFilePath);
+            if (NetpayIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Net Pay", PayrollRegisterFilePath);
+            if (EmployeeSSSIndex == -1) throw new PayrollRegisterHeaderNotFoundException("SSS EE", PayrollRegisterFilePath);
+            if (EmployeePagibigIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Pagibig EE", PayrollRegisterFilePath);
+            if (EmployeePhilHealthIndex == -1) throw new PayrollRegisterHeaderNotFoundException("PhilHealth EE", PayrollRegisterFilePath);
+
+            if (CutoffDate == default) throw new PayrollRegisterHeaderNotFoundException( "Cutoff Date", PayrollRegisterFilePath);
         }
 
 
-        public IEnumerable<Payroll> StartImport(string payRegisterFilePath)
+        public IEnumerable<Payroll> StartImport(string payrollRegisterFilePath)
         {
+            PayrollRegisterFilePath = payrollRegisterFilePath;
+
             CutoffDate = default;
             List<Payroll> payrolls = new();
-            using (var stream = File.Open(payRegisterFilePath, FileMode.Open, FileAccess.Read))
+            using (var stream = File.Open(payrollRegisterFilePath, FileMode.Open, FileAccess.Read))
             {
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     FindHeaders(reader);
-                    FindPayrollDate(reader);
+                    FindCutoffDate(reader);
+
+                    ValidatePayRegisterFile();
+
                     Cutoff cutoff = new Cutoff(CutoffDate);
                     do
                     {
@@ -60,7 +76,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                             YearCovered = cutoff.YearCovered,
                         };
 
-                        newPayroll.RegPay = reader.GetDouble(GrossPayIndex);
+                        newPayroll.RegularPay = reader.GetDouble(GrossPayIndex);
                         newPayroll.RegHours = reader.GetDouble(RegularHoursIndex);
                         newPayroll.GrossPay = reader.GetDouble(GrossPayIndex);
                         newPayroll.NetPay = reader.GetDouble(NetpayIndex);
@@ -115,7 +131,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             }
         }
 
-        private void FindPayrollDate(IExcelDataReader reader)
+        private void FindCutoffDate(IExcelDataReader reader)
         {
             CheckCutoffDate(reader);
             reader.Read();

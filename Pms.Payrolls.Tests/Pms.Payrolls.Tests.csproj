@@ -6,6 +6,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -27,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TESTDATA\AlphalistImportTests\TEST COMPANY_2022-Alpha%284%29.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TESTDATA\PayRegisterImportTests\K12202208B.XLS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -39,13 +46,10 @@
     <None Update="TESTDATA\PayRegisterImportTests\P7A201912A.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TEMPLATES\template-13TH-PAY.xls">
+    <None Update="TEMPLATES\CBC.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TEMPLATES\template-CHINABANK.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TEMPLATES\template-CHK.xls">
+    <None Update="TEMPLATES\CHK.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TEMPLATES\template-COMPARE.xls">
@@ -57,19 +61,10 @@
     <None Update="TEMPLATES\template-IMPORT.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TEMPLATES\TEMPLATE-LBP.xls">
+    <None Update="TEMPLATES\LBP.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TEMPLATES\Template-METROPALO.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TEMPLATES\Template-METROPALO_20211001.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TEMPLATES\Template-METROTAC.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TEMPLATES\Template-METROTAC_20211001.xls">
+    <None Update="TEMPLATES\MB.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TEMPLATES\template-SEG-CHG-SUMMARY.xls">
@@ -78,12 +73,13 @@
     <None Update="TEMPLATES\template-SEG-SUMMARY.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TEMPLATES\template-UCPB.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="TEMPLATES\template-ZEROS.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Exports\Alphalist\" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ namespace Pms.Payrolls.Domain
         {
             CHK = 0000,
             LBP = 1000,
-            CHB = 1001,
+            CBC = 1001,
             MTAC = 1002,
             MPALO = 1003,
         }

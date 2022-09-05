@@ -23,9 +23,6 @@ namespace Pms.Payrolls.Domain
         //public Company Company { get; set; }
 
         public string PayrollCode { get; set; }
-        public string BankCategory { get; set; }
-        public BankChoices Bank { get; set; }
-
 
         public double RegHours { get; set; }
         public double Overtime { get; set; }
@@ -35,7 +32,7 @@ namespace Pms.Payrolls.Domain
         public double AbsTar { get; set; }// Absent & Tardy
 
         public double GrossPay { get; set; }
-        public double RegPay { get; set; }
+        public double RegularPay { get; set; }
         public double NetPay { get; set; }
 
         public double EmployeeSSS { get; set; }
@@ -61,9 +58,9 @@ namespace Pms.Payrolls.Domain
                 if (RegHours > 96)
                 {
                     double AdjustedRegHours = RegHours - AbsTar;
-                    return RegPay / AdjustedRegHours;
+                    return RegularPay / AdjustedRegHours;
                 }
-                return RegPay / RegHours;
+                return RegularPay / RegHours;
             }
         }
         public double AdjustedRegPay
@@ -74,8 +71,25 @@ namespace Pms.Payrolls.Domain
                 {
                     return Rate * 96;
                 }
-                return RegPay;
+                return RegularPay;
             }
+        }
+
+
+        public bool IsReadyForExport() => EE is null || EE.AccountNumber == "";
+
+        public void UpdateValues()
+        {
+            EmployeeSSS = ConvertToPositive(EmployeeSSS);
+            EmployeePagibig = ConvertToPositive(EmployeePagibig);
+            EmployeePhilHealth = ConvertToPositive(EmployeePhilHealth);
+        }
+
+        private double ConvertToPositive(double value)
+        {
+            if (value < 0)//ensure negative value    
+                return value = value - (value * 2);
+            return value;
         }
     }
 }

@@ -11,37 +11,31 @@ using Pms.Payrolls.Domain.Services;
 using Pms.Payrolls.Tests;
 using Pms.Payrolls.ServiceLayer.EfCore;
 using Pms.Payrolls.Domain;
-using Pms.Payrolls.Domain.SupportTypes;
 using static Pms.Payrolls.Domain.Enums;
 
 namespace Pms.Payrolls.ServiceLayer.Files.Exports.Tests
 {
-    public class AlphalistExportTests
+    public class AlphalistVerifierExporterTests
     {
         private IDbContextFactory<PayrollDbContext> _factory;
         private IProvidePayrollService _payrollProvider;
 
-        public AlphalistExportTests()
+        public AlphalistVerifierExporterTests()
         {
             _factory = new PayrollDbContextFactoryFixture();
             _payrollProvider = new PayrollProvider(_factory);
         }
+
         [Fact()]
-        public void ShouldExportAlphalist()
+        public void ShouldExportAlphaVerifier()
         {
             Company company = new() { RegisteredName = "TEST COMPANY", MinimumRate = 71.25 };
             int yearCovered = 2022;
             IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(yearCovered, BankChoices.LBP);
             var employeePayrolls = payrolls.GroupBy(py => py.EEId).Select(py => py.ToList()).ToList();
 
-            List<AlphalistDetail> alphalists = new();
-            foreach (var employeePayroll in employeePayrolls)
-                alphalists.Add(new AutomatedAlphalistDetail(employeePayroll, company.MinimumRate).CreateAlphalistDetail());
-
-            Assert.NotEmpty(alphalists);
-
-            AlphalistExporter exporter = new();
-            exporter.StartExport(alphalists, yearCovered, company);
+            AlphalistVerifierExporter exporter = new();
+            exporter.StartExport(employeePayrolls,yearCovered,company);
         }
     }
 }

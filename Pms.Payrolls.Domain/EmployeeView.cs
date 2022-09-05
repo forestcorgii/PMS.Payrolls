@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Pms.Payrolls.Domain.Enums;
 
 namespace Pms.Payrolls.Domain
 {
@@ -31,5 +32,7 @@ namespace Pms.Payrolls.Domain
 
         public string AccountNumber { get; private set; }
         public string CardNumber { get; private set; }
+        public BankChoices Bank { get; private set; }
+
     }
 }

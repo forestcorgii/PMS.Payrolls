@@ -11,9 +11,8 @@ using static Pms.Payrolls.Domain.Enums;
 
 namespace Pms.Payrolls.ServiceLayer.Files.Exports
 {
-    public class AlphalistExport
+    public class AlphalistExporter
     {
-
         public void StartExport(IEnumerable<AlphalistDetail> alphalists, int year, Company company)
         {
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -29,10 +28,11 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             sheet = workbook.CreateSheet("D2");
             WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour <= company.MinimumRate), sheet, AlphalistScheduleNumberChoices.D2);
 
-
             using (var nTemplateFile = new FileStream(filename, FileMode.Create, FileAccess.Write))
                 workbook.Write(nTemplateFile);
         }
+
+
 
         public void WriteToSheet(IEnumerable<AlphalistDetail> alphalists, ISheet sheet, AlphalistScheduleNumberChoices type)
         {
@@ -55,8 +55,8 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             row.CreateCell(append(ref index)).SetCellValue("TIN");
             row.CreateCell(append(ref index)).SetCellValue("EMPLOYMENT_FROM");
             row.CreateCell(append(ref index)).SetCellValue("EMPLOYMENT_TO");
-            row.CreateCell(append(ref index)).SetCellValue("ACTUAL_AMT_WTHLD");
             row.CreateCell(append(ref index)).SetCellValue("FACTOR_USED");
+            row.CreateCell(append(ref index)).SetCellValue("ACTUAL_AMT_WTHLD");
             row.CreateCell(append(ref index)).SetCellValue("PRES_TAXABLE_SALARIES");
             row.CreateCell(append(ref index)).SetCellValue("PRES_TAXABLE_13TH_MONTH");
             row.CreateCell(append(ref index)).SetCellValue("PRES_TAX_WTHLD");
@@ -96,10 +96,10 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             row.CreateCell(append(ref index)).SetCellValue(alpha.LastName);
             row.CreateCell(append(ref index)).SetCellValue(alpha.MiddleName);
             row.CreateCell(append(ref index)).SetCellValue(alpha.Tin);
-            row.CreateCell(append(ref index)).SetCellValue(alpha.StartDate);
-            row.CreateCell(append(ref index)).SetCellValue(alpha.ResignationDate);
-            row.CreateCell(append(ref index)).SetCellValue(alpha.AcutalAmountWithheld);
+            row.CreateCell(append(ref index)).SetCellValue(alpha.StartDate.ToString("yyyy-MM-dd"));
+            row.CreateCell(append(ref index)).SetCellValue(alpha.ResignationDate.ToString("yyyy-MM-dd"));
             row.CreateCell(append(ref index)).SetCellValue(alpha.FactorUsed);
+            row.CreateCell(append(ref index)).SetCellValue(alpha.AcutalAmountWithheld);
             row.CreateCell(append(ref index)).SetCellValue(alpha.PresentTaxableSalary);
             row.CreateCell(append(ref index)).SetCellValue(alpha.PresentTaxable13thMonth);
             row.CreateCell(append(ref index)).SetCellValue(alpha.PresentTaxWithheld);

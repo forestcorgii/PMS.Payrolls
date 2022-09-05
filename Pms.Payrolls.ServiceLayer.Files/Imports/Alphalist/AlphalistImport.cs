@@ -1,7 +1,12 @@
 ﻿using DotNetDBF;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using Pms.Payrolls.Domain;
 using Pms.Payrolls.Domain.SupportTypes;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,102 +15,429 @@ namespace Pms.Payrolls.ServiceLayer.Files
 {
     public class AlphalistImport
     {
-        public void ImportToBIRProgram()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
+        public void ImportToBIRProgram(string alphalistFilepath, string birProgramDataDirectory, Company company)
         {
+            IWorkbook workbook;
+            using (var alphalistFile = new FileStream(alphalistFilepath, FileMode.Open, FileAccess.Read))
+                workbook = new HSSFWorkbook(alphalistFile);
 
+            List<AlphalistDetail> alphalists = new();
+            ISheet sheet = workbook.GetSheet("D1");
+
+            int sequence = 1;
+            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
+            {
+                IRow row = sheet.GetRow(rowIndex);
+                if (row is not null && row.GetCell(0) is not null)
+                    alphalists.Add(GetDetail(row, company, "D1", sequence));
+                else break;
+                sequence++;
+            }
+            sheet = workbook.GetSheet("D2");
+            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
+            {
+                IRow row = sheet.GetRow(rowIndex);
+                if (row is not null && row.GetCell(0) is not null)
+                    alphalists.Add(GetDetail(row, company, "D2", sequence));
+                else break;
+                sequence++;
+            }
+
+
+            string connectionString = $"Provider=vfpoledb;Data Source={birProgramDataDirectory};Extended Properties=dBase IV";
+            OleDbConnection olecon = new(connectionString);
+            olecon.Open();
+
+            OleDbCommand olecom = new OleDbCommand() { Connection = olecon };
+            olecom.CommandText = "DELETE FROM Alphadtl.DBF;";
+            olecom.ExecuteNonQuery();
+
+            string headers = string.Join(",", GetHeaders());
+            foreach (AlphalistDetail alpha in alphalists)
+            {
+                object[] values = GetValues(alpha);
+                string convertedValues = string.Join(",", ConvertValuesToInsertableString(values));
+                olecom.CommandText = $"INSERT INTO Alphadtl.DBF ({headers}) VALUES({convertedValues});";
+                olecom.ExecuteNonQuery();
+            }
+            olecon.Close();
+        }
+        private static int append(ref int index)
+        {
+            index++;
+            return index;
+        }
+        private AlphalistDetail GetDetail(IRow row, Company company, string schedule, int sequence)
+        {
+            AlphalistDetail alpha = new();
+            alpha.EmployerBranchCode = company.BranchCode;
+            alpha.EmployerTin = company.TIN;
+            alpha.ScheduleNumber = schedule;
+            alpha.SequenceNumber = sequence;
+            alpha.RegisteredName = company.RegisteredName;
+
+            alpha.FormType = "1604C";
+            alpha.BranchCode= "0000";
+            alpha.RegionNumber = company.Region;
+            alpha.SubsFiling = "Y";
+
+            int columnIndex = -1;
+            alpha.EEId = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.FirstName = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.LastName = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.MiddleName = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.Tin = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.StartDate = DateTime.Parse(row.GetCell(append(ref columnIndex)).StringCellValue);
+            alpha.ResignationDate = DateTime.Parse(row.GetCell(append(ref columnIndex)).StringCellValue);
+            alpha.FactorUsed = (int)row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.AcutalAmountWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentTaxableSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentTaxable13thMonth = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentTaxWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxable13thMonth = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableSssGsisOtherContribution = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.OverWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.AmmountWithheldOnDecember = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.TaxDue = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.NetTaxableCompensationIncome = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.GrossCompensationIncome = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableDeMinimis = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentTotalCompensation = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentTotalNonTaxableCompensationIncome = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableGrossCompensationIncome = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableBasicSmwDay = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableBasicSmwMonth = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableBasicSmwYear = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableHolidayPay = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableOvertimePay = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableNightDifferential = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.PresentNonTaxableHazardPay = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.NonTaxableBasicSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.TaxableBasicSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.Nationality = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.ReasonForSeparation = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.EmploymentStatus = row.GetCell(append(ref columnIndex)).StringCellValue;
+            //alpha.December = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            //alpha.OverWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
+
+
+            return alpha;
         }
 
-        private void WriteRecordToDbf(DBFWriter writer,AlphalistDetail alpha)
+
+
+        private object[] GetValues(AlphalistDetail alpha)
         {
-            string[] alphaRecord = new[]
+            return new object[]
             {
                 alpha.FormType,
                 alpha.EmployerTin,
                 alpha.EmployerBranchCode,
                 alpha.ReturnPeriod,
                 alpha.ScheduleNumber,
+
                 alpha.SequenceNumber,
                 alpha.RegisteredName,
-                alpha.EEId,
                 alpha.FirstName,
                 alpha.LastName,
                 alpha.MiddleName,
+
                 alpha.Tin,
                 alpha.BranchCode,
-                alpha.StartDate.ToString("dd/MM/yyyy"),
-                alpha.ResignationDate.ToString("dd/MM/yyyy"),
+                alpha.StartDate,
+                alpha.ResignationDate,
                 alpha.AtcCode,
+
                 alpha.StatusCode,
                 alpha.RegionNumber,
                 alpha.SubsFiling,
                 alpha.ExmpnCode,
-                alpha.FactorUsed.ToString("##.##"),
-                alpha.AcutalAmountWithheld.ToString("##.##"),
-                alpha.IncomePayment.ToString("##.##"),
-                alpha.PresentTaxableSalary.ToString("##.##"),
-                alpha.PresentTaxable13thMonth.ToString("##.##"),
-                alpha.PresentTaxWithheld.ToString("##.##"),
-                alpha.PresentNonTaxableSalary.ToString("##.##"),
-                alpha.PresentNonTaxable13thMonth.ToString("##.##"),
-                alpha.PreviousTaxableSalary.ToString("##.##"),
-                alpha.PreviousTaxable13thMonth.ToString("##.##"),
-                alpha.PreviousTaxWithheld.ToString("##.##"),
-                alpha.PreviousNonTaxableSalary.ToString("##.##"),
-                alpha.PreviousNonTaxable13thMonth.ToString("##.##"),
-                alpha.PresentNonTaxableSssGsisOtherContribution.ToString("##.##"),
-                alpha.PreviousNonTaxableSssGsisOtherContribution.ToString("##.##"),
-                alpha.TaxRate.ToString("##.##"),
-                alpha.OverWithheld.ToString("##.##"),
-                alpha.AmmountWithheldOnDecember.ToString("##.##"),
-                alpha.ExmpnAmount.ToString("##.##"),
-                alpha.TaxDue.ToString("##.##"),
-                alpha.HeathPremium.ToString("##.##"),
-                alpha.FringeBenefit.ToString("##.##"),
-                alpha.MonetaryValue.ToString("##.##"),
-                alpha.NetTaxableCompensationIncome.ToString("##.##"),
-                alpha.GrossCompensationIncome.ToString("##.##"),
-                alpha.PreviousNonTaxableDeMinimis.ToString("##.##"),
-                alpha.PreviousTotalNonTaxableCompensationIncome.ToString("##.##"),
-                alpha.PreviousTaxableBasicSalary.ToString("##.##"),
-                alpha.PresentNonTaxableDeMinimis.ToString("##.##"),
-                alpha.PresentTaxableBasicSalary.ToString("##.##"),
-                alpha.PresentTotalCompensation.ToString("##.##"),
-                alpha.PreviousAndPresentTotalTaxable.ToString("##.##"),
-                alpha.PresentTotalNonTaxableCompensationIncome.ToString("##.##"),
-                alpha.PreviousNonTaxableBasicSmw.ToString("##.##"),
-                alpha.PreviousNonTaxableHolidayPay.ToString("##.##"),
-                alpha.PreviousNonTaxableOvertimePay.ToString("##.##"),
-                alpha.PreviousNonTaxableNightDifferential.ToString("##.##"),
-                alpha.PreviousNonTaxableHazardPay.ToString("##.##"),
+                alpha.FactorUsed,
 
-                alpha.PresentNonTaxableGrossCompensationIncome.ToString("##.##"),
-                alpha.PresentNonTaxableBasicSmwDay.ToString("##.##"),
-                alpha.PresentNonTaxableBasicSmwMonth.ToString("##.##"),
-                alpha.PresentNonTaxableBasicSmwYear.ToString("##.##"),
-                alpha.PresentNonTaxableHolidayPay.ToString("##.##"),
-                alpha.PresentNonTaxableOvertimePay.ToString("##.##"),
-                alpha.PresentNonTaxableNightDifferential.ToString("##.##"),
-                alpha.PreviousAndPresentTotalCompensationIncome.ToString("##.##"),
-                alpha.PresentNonTaxableHazardPay.ToString("##.##"),
-                alpha.TotalNontaxableCompensationIncome.ToString("##.##"),
-                alpha.TotalTaxableCompensationIncome.ToString("##.##"),
-                alpha.PreviousTotalTaxable.ToString("##.##"),
-                alpha.NonTaxableBasicSalary.ToString("##.##"),
-                alpha.TaxableBasicSalary.ToString("##.##"),
-                alpha.QrtNumber.ToString(),
-                "{//}",
+                alpha.AcutalAmountWithheld,
+                alpha.IncomePayment,
+                alpha.PresentTaxableSalary,
+                alpha.PresentTaxable13thMonth,
+                alpha.PresentTaxWithheld,
+
+                alpha.PresentNonTaxableSalary,
+                alpha.PresentNonTaxable13thMonth,
+                alpha.PreviousTaxableSalary,
+                alpha.PreviousTaxable13thMonth,
+                alpha.PreviousTaxWithheld,
+
+                alpha.PreviousNonTaxableSalary,
+                alpha.PreviousNonTaxable13thMonth,
+                alpha.PresentNonTaxableSssGsisOtherContribution,
+                alpha.PreviousNonTaxableSssGsisOtherContribution,
+                alpha.TaxRate,
+
+                alpha.OverWithheld,
+                alpha.AmmountWithheldOnDecember,
+                alpha.ExmpnAmount,
+                alpha.TaxDue,
+                alpha.HeathPremium,
+
+                alpha.FringeBenefit,
+                alpha.MonetaryValue,
+                alpha.NetTaxableCompensationIncome,
+                alpha.GrossCompensationIncome,
+                alpha.PreviousNonTaxableDeMinimis,
+
+                alpha.PreviousTotalNonTaxableCompensationIncome,
+                alpha.PreviousTaxableBasicSalary,
+                alpha.PresentNonTaxableDeMinimis,
+                alpha.PresentTaxableBasicSalary,
+                alpha.PresentTotalCompensation,
+
+                alpha.PreviousAndPresentTotalTaxable,
+                alpha.PresentTotalNonTaxableCompensationIncome,
+                alpha.PreviousNonTaxableGrossCompensationIncome,
+                alpha.PreviousNonTaxableBasicSmw,
+                alpha.PreviousNonTaxableHolidayPay,
+
+
+                alpha.PreviousNonTaxableOvertimePay,
+                alpha.PreviousNonTaxableNightDifferential,
+                alpha.PreviousNonTaxableHazardPay,
+                alpha.PresentNonTaxableGrossCompensationIncome,
+                alpha.PresentNonTaxableBasicSmwDay,
+
+                alpha.PresentNonTaxableBasicSmwMonth,
+                alpha.PresentNonTaxableBasicSmwYear,
+                alpha.PresentNonTaxableHolidayPay,
+                alpha.PresentNonTaxableOvertimePay,
+                alpha.PresentNonTaxableNightDifferential,
+
+                alpha.PreviousAndPresentTotalCompensationIncome,
+                alpha.PresentNonTaxableHazardPay,
+                alpha.TotalNontaxableCompensationIncome,
+                alpha.TotalTaxableCompensationIncome,
+                alpha.PreviousTotalTaxable,
+
+                alpha.NonTaxableBasicSalary,
+                alpha.TaxableBasicSalary,
+                alpha.QrtNumber,
+                alpha.QuarterDate,
                 alpha.Nationality,
+
                 alpha.ReasonForSeparation,
                 alpha.EmploymentStatus,
                 alpha.Address1,
                 alpha.Address2,
                 alpha.AtcDescription,
-                "{//}",
-                "{//}",
 
+                alpha.DateOfDeath,
+                alpha.DateWithheld,
+                ""
             };
+        }
+        private string[] ConvertValuesToInsertableString(object[] values)
+        {
+            List<string> convertedValues = new();
+            foreach (var value in values)
+            {
+                if (value is string)
+                    convertedValues.Add($"'{value}'");
+                else if (value is int)
+                    convertedValues.Add($"{value}");
+                else if (value is double)
+                    convertedValues.Add($"{value:0.00}");
+                else if (value is DateTime)
+                    convertedValues.Add($"{{{value:MM/dd/yyyy}}}");
+            }
+            return convertedValues.ToArray();
+        }
 
-            writer.AddRecord(alphaRecord);
+        private string[] GetHeaders()
+        {
+            return new[] {
+                "FORM_TYPE",
+                "EMPLOYER_T",
+                "EMPLOYER_B",
+                "RETRN_PERI",
+                "SCHEDULE_N",
+
+                "SEQUENCE_N",
+                "REGISTERED",
+                "FIRST_NAME",
+                "LAST_NAME",
+                "MIDDLE_NAM",
+
+                "TIN",
+                "BRANCH_COD",
+                "EMPLOYMENT",
+                "EMPLOYMEN2",
+                "ATC_CODE",
+
+                "STATUS_COD",
+                "REGION_NUM",
+                "SUBS_FILIN",
+                "EXMPN_CODE",
+                "FACTOR_USE",
+
+                "ACTUAL_AMT",
+                "INCOME_PAY",
+                "PRES_TAXAB",
+                "PRES_TAXA2",
+                "PRES_TAX_W",
+
+                "PRES_NONTA",
+                "PRES_NONT2",
+                "PREV_TAXAB",
+                "PREV_TAXA2",
+                "PREV_TAX_W",
+
+                "PREV_NONTA",
+                "PREV_NONT2",
+                "PRES_NONT3",
+                "PREV_NONT3",
+                "TAX_RATE",
+
+                "OVER_WTHLD",
+                "AMT_WTHLD_",
+                "EXMPN_AMT",
+                "TAX_DUE",
+                "HEATH_PREM",
+
+
+                "FRINGE_BEN",
+                "MONETARY_V",
+                "NET_TAXABL",
+                "GROSS_COMP",
+                "PREV_NONT4",
+
+                "PREV_TOTAL",
+                "PREV_TAXA3",
+                "PRES_NONT4",
+                "PRES_TAXA3",
+                "PRES_TOTAL",
+
+                "PREV_PRES_",
+                "PRES_TOTA2",
+                "PREV_NONT5",
+                "PREV_NONT6",
+                "PREV_NONT7",
+
+                "PREV_NONT8",
+                "PREV_NONT9",
+                "PREV_NON10",
+                "PRES_NONT5",
+                "PRES_NONT6",
+
+                "PRES_NONT7",
+                "PRES_NONT8",
+                "PRES_NONT9",
+                "PRES_NON10",
+                "PRES_NON11",
+
+                "PREV_PRES2",
+                "PRES_NON12",
+                "TOTAL_NONT",
+                "TOTAL_TAXA",
+                "PREV_TOTA2",
+
+                "NONTAX_BAS",
+                "TAX_BASIC_",
+                "QRT_NUM",
+                "QUARTERDAT",
+                "NATIONALIT",
+
+                "REASON_SEP",
+                "EMPLOYMEN3",
+                "ADDRESS1",
+                "ADDRESS2",
+                "ATC_DESC",
+
+                "DATE_DEATH",
+                "DATE_WTHEL",
+                "N_NULLFLAG"
+            };
         }
     }
 }
+
+//"FORM_TYPE",
+//"EMPLOYER_TIN",
+//"EMPLOYER_BRANCH_CODE",
+//"RETRN_PERIOD",
+//"SCHEDULE_NUM",
+//"SEQUENCE_NUM",
+//"REGISTERED_NAME",
+//"FIRST_NAME",
+//"LAST_NAME",
+//"MIDDLE_NAME",
+//"TIN",
+//"BRANCH_CODE",
+//"EMPLOYMENT_FROM",
+//"EMPLOYMENT_TO",
+//"ATC_CODE",
+//"STATUS_CODE",
+//"REGION_NUM",
+//"SUBS_FILING",
+//"EXMPN_CODE",
+//"FACTOR_USED",
+//"ACTUAL_AMT_WTHLD",
+//"INCOME_PAYMENT",
+//"PRES_TAXABLE_SALARIES",
+//"PRES_TAXABLE_13TH_MONTH",
+//"PRES_TAX_WTHLD",
+//"PRES_NONTAX_SALARIES",
+//"PRES_NONTAX_13TH_MONTH",
+//"PREV_TAXABLE_SALARIES",
+//"PREV_TAXABLE_13TH_MONTH",
+//"PREV_TAX_WTHLD",
+//"PREV_NONTAX_SALARIES",
+//"PREV_NONTAX_13TH_MONTH",
+//"PRES_NONTAX_SSS_GSIS_OTH_CONT",
+//"PREV_NONTAX_SSS_GSIS_OTH_CONT",
+//"TAX_RATE",
+//"OVER_WTHLD",
+//"AMT_WTHLD_DEC",
+//"EXMPN_AMT",
+//"TAX_DUE",
+//"HEATH_PREMIUM",
+//"FRINGE_BENEFIT",
+//"MONETARY_VALUE",
+//"NET_TAXABLE_COMP_INCOME",
+//"GROSS_COMP_INCOME",
+//"PREV_NONTAX_DE_MINIMIS",
+//"PREV_TOTAL_NONTAX_COMP_INCOME",
+//"PREV_TAXABLE_BASIC_SALARY",
+//"PRES_NONTAX_DE_MINIMIS",
+//"PRES_TAXABLE_BASIC_SALARY",
+//"PRES_TOTAL_COMP",
+//"PREV_PRES_TOTAL_TAXABLE",
+//"PRES_TOTAL_NONTAX_COMP_INCOME",
+//"PREV_NONTAX_GROSS_COMP_INCOME",
+//"PREV_NONTAX_BASIC_SMW",
+//"PREV_NONTAX_HOLIDAY_PAY",
+//"PREV_NONTAX_OVERTIME_PAY",
+//"PREV_NONTAX_NIGHT_DIFF",
+//"PREV_NONTAX_HAZARD_PAY",
+//"PRES_NONTAX_GROSS_COMP_INCOME",
+//"PRES_NONTAX_BASIC_SMW_DAY",
+//"PRES_NONTAX_BASIC_SMW_MONTH",
+//"PRES_NONTAX_BASIC_SMW_YEAR",
+//"PRES_NONTAX_HOLIDAY_PAY",
+//"PRES_NONTAX_OVERTIME_PAY",
+//"PRES_NONTAX_NIGHT_DIFF",
+//"PREV_PRES_TOTAL_COMP_INCOME",
+//"PRES_NONTAX_HAZARD_PAY",
+//"TOTAL_NONTAX_COMP_INCOME",
+//"TOTAL_TAXABLE_COMP_INCOME",
+//"PREV_TOTAL_TAXABLE",
+//"NONTAX_BASIC_SAL",
+//"TAX_BASIC_SAL",
+//"QRT_NUM",
+//"QUARTERDATE",
+//"NATIONALITY",
+//"REASON_SEPARATION",
+//"EMPLOYMENT_STATUS",
+//"ADDRESS1",
+//"ADDRESS2",
+//"ATC_DESC",
+//"DATE_DEATH",
+//"DATE_WTHELD"
