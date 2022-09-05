@@ -16,16 +16,17 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
         {
             Cutoff cutoff = new Cutoff(cutoffId);
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
+            
             string filePath = $@"{startupPath}\EXPORT\{cutoffId}\{payrollCode}\BANK REPORT\LBP";
-            Directory.CreateDirectory(filePath);
-            string templatePath = $@"{startupPath}\TEMPLATES\TEMPLATE-LBP.xls";
-
             string filename = $"{payrollCode}_{cutoff.CutoffDate:yyyyMMdd}-LBP".AppendFile(filePath);
+            Directory.CreateDirectory(filePath);
+
+            string templatePath = $@"{startupPath}\TEMPLATES\TEMPLATE-LBP.xls";
             File.Copy(templatePath, filename);
 
             payrolls = payrolls.OrderBy(p => p.EE.Fullname);
-            IEnumerable<Payroll> validPayrolls = payrolls.Where(p => !(p.EE is null || p.EE.AccountNumber == "" || p.EE.CardNumber == ""));
-            IEnumerable<Payroll> invalidPayrolls = payrolls.Where(p => p.EE is null || p.EE.AccountNumber == "" || p.EE.CardNumber == "");
+            IEnumerable<Payroll> validPayrolls = payrolls.Where(p => !p.IsReadyForExport());
+            IEnumerable<Payroll> invalidPayrolls = payrolls.Where(p => p.IsReadyForExport());
 
             GenerateXls(filename, validPayrolls.ToArray(), invalidPayrolls.ToArray());
             GenerateCsvandDat(filename, validPayrolls.Count(), payrollCode);
