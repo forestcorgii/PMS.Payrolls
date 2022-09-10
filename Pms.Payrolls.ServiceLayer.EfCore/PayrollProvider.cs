@@ -75,6 +75,16 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Where(p => p.EE.Bank == bankType)
                 .ToList();
         }
+        public IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Include(p => p.TS)
+                .Where(p => p.CutoffId == cutoffId)
+                .Where(p => p.PayrollCode == payrollCode)
+                .ToList();
+        }
 
 
         public IEnumerable<Payroll> GetNoEEPayrolls()

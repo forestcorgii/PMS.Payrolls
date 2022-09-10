@@ -11,8 +11,8 @@ namespace Pms.Payrolls.Domain.Services
     {
         IEnumerable<Payroll> GetPayrolls(string cutoffId);
         IEnumerable<Payroll> GetPayrolls(string cutoffId, BankChoices bankType);
-        IEnumerable<Payroll> GetPayrolls(int yearsCovered, BankChoices bankType);
         IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId);
+        IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode);
         IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode, BankChoices bankType);
         IEnumerable<Payroll> GetAllPayrolls();
         IEnumerable<Company> GetAllCompanies();

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Pms.Payrolls.ServiceLayer.Files
 {
@@ -53,7 +54,21 @@ namespace Pms.Payrolls.ServiceLayer.Files
             olecom.CommandText = "DELETE FROM Alphadtl.DBF;";
             olecom.ExecuteNonQuery();
 
-            string headers = string.Join(",", GetHeaders());
+            try
+            {
+                string headers = string.Join(",", GetHeadersMaxLength10());
+                StartSaving(headers, alphalists, olecom);
+            }
+            catch (Exception ex)
+            {
+                string headers = string.Join(",", GetHeaders());
+                StartSaving(headers, alphalists, olecom);
+            }
+            olecon.Close();
+        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
+        private void StartSaving(string headers, List<AlphalistDetail> alphalists, OleDbCommand olecom)
+        {
             foreach (AlphalistDetail alpha in alphalists)
             {
                 object[] values = GetValues(alpha);
@@ -61,8 +76,10 @@ namespace Pms.Payrolls.ServiceLayer.Files
                 olecom.CommandText = $"INSERT INTO Alphadtl.DBF ({headers}) VALUES({convertedValues});";
                 olecom.ExecuteNonQuery();
             }
-            olecon.Close();
         }
+
+
+
         private static int append(ref int index)
         {
             index++;
@@ -78,7 +95,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             alpha.RegisteredName = company.RegisteredName;
 
             alpha.FormType = "1604C";
-            alpha.BranchCode= "0000";
+            alpha.BranchCode = "0000";
             alpha.RegionNumber = company.Region;
             alpha.SubsFiling = "Y";
 
@@ -252,6 +269,94 @@ namespace Pms.Payrolls.ServiceLayer.Files
         }
 
         private string[] GetHeaders()
+        {
+            return new[] {
+                "FORM_TYPE",
+                "EMPLOYER_TIN",
+                "EMPLOYER_BRANCH_CODE",
+                "RETRN_PERIOD",
+                "SCHEDULE_NUM",
+                "SEQUENCE_NUM",
+                "REGISTERED_NAME",
+                "FIRST_NAME",
+                "LAST_NAME",
+                "MIDDLE_NAME",
+                "TIN",
+                "BRANCH_CODE",
+                "EMPLOYMENT_FROM",
+                "EMPLOYMENT_TO",
+                "ATC_CODE",
+                "STATUS_CODE",
+                "REGION_NUM",
+                "SUBS_FILING",
+                "EXMPN_CODE",
+                "FACTOR_USED",
+                "ACTUAL_AMT_WTHLD",
+                "INCOME_PAYMENT",
+                "PRES_TAXABLE_SALARIES",
+                "PRES_TAXABLE_13TH_MONTH",
+                "PRES_TAX_WTHLD",
+                "PRES_NONTAX_SALARIES",
+                "PRES_NONTAX_13TH_MONTH",
+                "PREV_TAXABLE_SALARIES",
+                "PREV_TAXABLE_13TH_MONTH",
+                "PREV_TAX_WTHLD",
+                "PREV_NONTAX_SALARIES",
+                "PREV_NONTAX_13TH_MONTH",
+                "PRES_NONTAX_SSS_GSIS_OTH_CONT",
+                "PREV_NONTAX_SSS_GSIS_OTH_CONT",
+                "TAX_RATE",
+                "OVER_WTHLD",
+                "AMT_WTHLD_DEC",
+                "EXMPN_AMT",
+                "TAX_DUE",
+                "HEATH_PREMIUM",
+                "FRINGE_BENEFIT",
+                "MONETARY_VALUE",
+                "NET_TAXABLE_COMP_INCOME",
+                "GROSS_COMP_INCOME",
+                "PREV_NONTAX_DE_MINIMIS",
+                "PREV_TOTAL_NONTAX_COMP_INCOME",
+                "PREV_TAXABLE_BASIC_SALARY",
+                "PRES_NONTAX_DE_MINIMIS",
+                "PRES_TAXABLE_BASIC_SALARY",
+                "PRES_TOTAL_COMP",
+                "PREV_PRES_TOTAL_TAXABLE",
+                "PRES_TOTAL_NONTAX_COMP_INCOME",
+                "PREV_NONTAX_GROSS_COMP_INCOME",
+                "PREV_NONTAX_BASIC_SMW",
+                "PREV_NONTAX_HOLIDAY_PAY",
+                "PREV_NONTAX_OVERTIME_PAY",
+                "PREV_NONTAX_NIGHT_DIFF",
+                "PREV_NONTAX_HAZARD_PAY",
+                "PRES_NONTAX_GROSS_COMP_INCOME",
+                "PRES_NONTAX_BASIC_SMW_DAY",
+                "PRES_NONTAX_BASIC_SMW_MONTH",
+                "PRES_NONTAX_BASIC_SMW_YEAR",
+                "PRES_NONTAX_HOLIDAY_PAY",
+                "PRES_NONTAX_OVERTIME_PAY",
+                "PRES_NONTAX_NIGHT_DIFF",
+                "PREV_PRES_TOTAL_COMP_INCOME",
+                "PRES_NONTAX_HAZARD_PAY",
+                "TOTAL_NONTAX_COMP_INCOME",
+                "TOTAL_TAXABLE_COMP_INCOME",
+                "PREV_TOTAL_TAXABLE",
+                "NONTAX_BASIC_SAL",
+                "TAX_BASIC_SAL",
+                "QRT_NUM",
+                "QUARTERDATE",
+                "NATIONALITY",
+                "REASON_SEPARATION",
+                "EMPLOYMENT_STATUS",
+                "ADDRESS1",
+                "ADDRESS2",
+                "ATC_DESC",
+                "DATE_DEATH",
+                "DATE_WTHELD",
+                "N_NULLFLAG"
+            };
+        }
+        private string[] GetHeadersMaxLength10()
         {
             return new[] {
                 "FORM_TYPE",
@@ -441,3 +546,106 @@ namespace Pms.Payrolls.ServiceLayer.Files
 //"ATC_DESC",
 //"DATE_DEATH",
 //"DATE_WTHELD"
+
+/*
+                "FORM_TYPE",
+                "EMPLOYER_T",
+                "EMPLOYER_B",
+                "RETRN_PERI",
+                "SCHEDULE_N",
+
+                "SEQUENCE_N",
+                "REGISTERED",
+                "FIRST_NAME",
+                "LAST_NAME",
+                "MIDDLE_NAM",
+
+                "TIN",
+                "BRANCH_COD",
+                "EMPLOYMENT",
+                "EMPLOYMEN2",
+                "ATC_CODE",
+
+                "STATUS_COD",
+                "REGION_NUM",
+                "SUBS_FILIN",
+                "EXMPN_CODE",
+                "FACTOR_USE",
+
+                "ACTUAL_AMT",
+                "INCOME_PAY",
+                "PRES_TAXAB",
+                "PRES_TAXA2",
+                "PRES_TAX_W",
+
+                "PRES_NONTA",
+                "PRES_NONT2",
+                "PREV_TAXAB",
+                "PREV_TAXA2",
+                "PREV_TAX_W",
+
+                "PREV_NONTA",
+                "PREV_NONT2",
+                "PRES_NONT3",
+                "PREV_NONT3",
+                "TAX_RATE",
+
+                "OVER_WTHLD",
+                "AMT_WTHLD_",
+                "EXMPN_AMT",
+                "TAX_DUE",
+                "HEATH_PREM",
+
+
+                "FRINGE_BEN",
+                "MONETARY_V",
+                "NET_TAXABL",
+                "GROSS_COMP",
+                "PREV_NONT4",
+
+                "PREV_TOTAL",
+                "PREV_TAXA3",
+                "PRES_NONT4",
+                "PRES_TAXA3",
+                "PRES_TOTAL",
+
+                "PREV_PRES_",
+                "PRES_TOTA2",
+                "PREV_NONT5",
+                "PREV_NONT6",
+                "PREV_NONT7",
+
+                "PREV_NONT8",
+                "PREV_NONT9",
+                "PREV_NON10",
+                "PRES_NONT5",
+                "PRES_NONT6",
+
+                "PRES_NONT7",
+                "PRES_NONT8",
+                "PRES_NONT9",
+                "PRES_NON10",
+                "PRES_NON11",
+
+                "PREV_PRES2",
+                "PRES_NON12",
+                "TOTAL_NONT",
+                "TOTAL_TAXA",
+                "PREV_TOTA2",
+
+                "NONTAX_BAS",
+                "TAX_BASIC_",
+                "QRT_NUM",
+                "QUARTERDAT",
+                "NATIONALIT",
+
+                "REASON_SEP",
+                "EMPLOYMEN3",
+                "ADDRESS1",
+                "ADDRESS2",
+                "ATC_DESC",
+
+                "DATE_DEATH",
+                "DATE_WTHEL",
+                "N_NULLFLAG"
+ */

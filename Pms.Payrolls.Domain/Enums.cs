@@ -17,11 +17,12 @@ namespace Pms.Payrolls.Domain
         /// </summary>
         public enum BankChoices
         {
-            CHK = 0000,
-            LBP = 1000,
-            CBC = 1001,
-            MTAC = 1002,
-            MPALO = 1003,
+            CHK = 000,
+            LBP = 100,
+            CBC = 101,
+            CBC1 = 111,
+            MTAC = 102,
+            MPALO = 103,
         }
 
         public enum ImportProcessChoices

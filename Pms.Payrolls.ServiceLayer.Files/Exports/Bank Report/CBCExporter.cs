@@ -11,18 +11,25 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
 {
     public class CBCExporter : IExportBankReportService
     {
+        private Cutoff _cutoff;
+        private string _payrollCode;
 
-        public void StartExport(IEnumerable<Payroll> payrolls, string cutoffId, string payrollCode)
+        public CBCExporter(Cutoff cutoff, string payrollCode)
         {
-            Cutoff cutoff = new Cutoff(cutoffId);
+            _cutoff = cutoff;
+            _payrollCode = payrollCode;
+        }
+
+        public void StartExport(IEnumerable<Payroll> payrolls)
+        {
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
 
-            string filePath = $@"{startupPath}\EXPORT\{cutoffId}\{payrollCode}\BANK REPORT\CBC";
-            string filename = $"{payrollCode}_{cutoff.CutoffDate:yyyyMMdd}-CBC";
+            string filePath = $@"{startupPath}\EXPORT\{_cutoff.CutoffId}\{_payrollCode}\BANK REPORT\CBC";
+            string filename = $@"{filePath}\{_payrollCode}_{_cutoff.CutoffDate:yyyyMMdd}-CBC.xls";
             Directory.CreateDirectory(filePath);
             
-            string templatePath = $@"{startupPath}\TEMPLATES\TEMPLATE-CBC.xls";
-            File.Copy(templatePath, filename);
+            string templatePath = $@"{startupPath}\TEMPLATES\CBC.xls";
+            File.Copy(templatePath, filename,true);
 
             payrolls = payrolls.OrderBy(p => p.EE.Fullname);
             IEnumerable<Payroll> validPayrolls = payrolls.Where(p => !p.IsReadyForExport());
@@ -51,7 +58,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                 for (int i = 0; i < validayrolls.Length; i++)
                 {
                     Payroll payroll = validayrolls[i];
-                    row = sheet.GetRow(i + 5);
+                    row = sheet.GetRow(i + 4);
                     row.GetCell(3).SetCellValue(payroll.EE.AccountNumber);
                     row.GetCell(4).SetCellValue(payroll.EE.LastName);
                     row.GetCell(5).SetCellValue(payroll.EE.FirstName);
@@ -60,127 +67,5 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                 }
             }
         }
-
-
-        //public static void ExportDataCHINABANK(ref List<Payroll> payArr, ISheet sheet)
-        //{
-        //    for (int i = 0, loopTo = payArr.Count - 1; i <= loopTo; i++)
-        //    {
-        //        var rec = payArr[i];
-        //        IRow row = sheet.CreateRow(i + 5);
-        //        row.CreateCell(3).SetCellValue(rec.EE.AccountNumber);
-        //        row.CreateCell(4).SetCellValue(rec.EE.LastName);
-        //        row.CreateCell(5).SetCellValue(rec.EE.FirstName);
-        //        row.CreateCell(6).SetCellValue(rec.EE.MiddleName);
-        //        row.CreateCell(7).SetCellValue(rec.NetPay);
-        //    }
-        //}
-
-
-        //public static void ExportDataMETROPALO(ref List<Payroll> payArr, ISheet sheet)
-        //{
-        //    for (int i = 0, loopTo = payArr.Count - 1; i <= loopTo; i++)
-        //    {
-        //        var rec = payArr[i];
-        //        IRow row = sheet.CreateRow(i);
-        //        row.CreateCell(0).SetCellValue(rec.EE.LastName);
-        //        row.CreateCell(1).SetCellValue(rec.EE.FirstName);
-        //        row.CreateCell(2).SetCellValue(rec.EE.MiddleName);
-        //        row.CreateCell(3).SetCellValue("756" + rec.EE.AccountNumber);
-        //        row.CreateCell(4).SetCellValue(rec.NetPay);
-        //    }
-        //}
-
-        //public static void ExportDataMETROTAC(ref List<Payroll> payArr, ISheet sheet)
-        //{
-        //    for (int i = 0, loopTo = payArr.Count - 1; i <= loopTo; i++)
-        //    {
-        //        var rec = payArr[i];
-        //        IRow row = sheet.CreateRow(i);
-        //        row.CreateCell(0).SetCellValue(rec.EE.LastName);
-        //        row.CreateCell(1).SetCellValue(rec.EE.FirstName);
-        //        row.CreateCell(2).SetCellValue(rec.EE.MiddleName);
-        //        row.CreateCell(3).SetCellValue("525" + rec.EE.AccountNumber);
-        //        row.CreateCell(4).SetCellValue(rec.NetPay);
-        //    }
-        //}
-
-        //public static void ExportDataZeros(ref List<Payroll> payArr, ISheet sheet)
-        //{
-        //    IRow row = sheet.CreateRow(0);
-        //    row.CreateCell(0).SetCellValue("IDNo");
-        //    row.CreateCell(1).SetCellValue("Fullname");
-        //    row.CreateCell(2).SetCellValue("Amount");
-
-        //    for (int i = 0, loopTo = payArr.Count - 1; i <= loopTo; i++)
-        //    {
-        //        var rec = payArr[i];
-        //        row = sheet.CreateRow(i + 1);
-        //        row.CreateCell(0).SetCellValue(rec.EEId);
-        //        row.CreateCell(1).SetCellValue(rec.EE.Fullname);
-        //        row.CreateCell(2).SetCellValue(rec.NetPay);
-        //    }
-        //}
-
-        //public static void ExportDataCHECK(ref List<Payroll> payArr, string filePath, IWorkbook workbook)
-        //{
-        //    try
-        //    {
-        //        ISheet xl200DOWNSheet = workbook.GetSheetAt(0);
-        //        ISheet xl7500DOWNSheet = workbook.GetSheetAt(1);
-        //        ISheet xl7500UPSheet = workbook.GetSheetAt(2);
-        //        ISheet xl100KUPSheet = workbook.GetSheetAt(3);
-
-        //        Payroll[] Records200DOWN = payArr
-        //            .Where(p => p.NetPay <= 200)
-        //            .Where(p => p.NetPay > 0)
-        //            .ToArray();
-        //        Payroll[] Records7500DOWN = payArr
-        //            .Where(p => p.NetPay < 7500)
-        //            .Where(p => p.NetPay > 200)
-        //            .ToArray();
-        //        Payroll[] Recordsd7500UP = payArr
-        //            .Where(p => p.NetPay >= 7500)
-        //            .ToArray();
-        //        Payroll[] Records100KUP = payArr
-        //            .Where(p => p.NetPay >= 100000)
-        //            .ToArray();
-
-        //        WriteSpecificReport(xl7500UPSheet, Recordsd7500UP);
-        //        WriteSpecificReport(xl7500DOWNSheet, Records7500DOWN);
-        //        WriteSpecificReport(xl200DOWNSheet, Records200DOWN);
-        //        WriteSpecificReport(xl100KUPSheet, Records100KUP);
-
-        //        using (var nNewPayreg = new FileStream(filePath, FileMode.Open, FileAccess.Write))
-        //        {
-        //            workbook.Write(nNewPayreg);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //    }
-        //}
-
-        //public static void WriteSpecificReport(ISheet sheet, Payroll[] payrollRecords)
-        //{
-        //    IRow row = sheet.CreateRow(0);
-        //    row.CreateCell(0).SetCellValue("IDNo");
-        //    row.CreateCell(1).SetCellValue("Fullname");
-        //    row.CreateCell(2).SetCellValue("Amount");
-
-        //    for (int i = 0, loopTo = payrollRecords.Count() - 1; i <= loopTo; i++)
-        //    {
-        //        var rec = payrollRecords[i];
-        //        row = sheet.CreateRow(i + 1);
-        //        row.CreateCell(0).SetCellValue(rec.EEId);
-        //        row.CreateCell(1).SetCellValue(rec.EE.Fullname);
-        //        row.CreateCell(2).SetCellValue(rec.NetPay);
-        //    }
-        //}
-
-
-
-
-
     }
 }

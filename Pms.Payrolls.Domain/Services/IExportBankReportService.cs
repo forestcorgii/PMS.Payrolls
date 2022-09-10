@@ -8,7 +8,7 @@ namespace Pms.Payrolls.Domain.Services
 {
     public interface IExportBankReportService
     {
-        void StartExport(IEnumerable<Payroll> payrolls, string cutoffId, string payrollCode);
+        void StartExport(IEnumerable<Payroll> payrolls);
 
     }
 }

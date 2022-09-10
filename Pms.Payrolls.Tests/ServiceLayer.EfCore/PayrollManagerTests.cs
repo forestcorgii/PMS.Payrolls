@@ -32,11 +32,11 @@ namespace Pms.Payrolls.ServiceLayer.EfCore.Tests
         [Fact()]
         public void ShouldSavePayrollSuccessfully()
         {
-            Payroll expected = GenerateSeedPayroll("DYYJ", "2207-1", BankChoices.LBP, "MANILAIDCSI0000", 19000, 20000, 17000, -1000, -1000, -1000);
+            Payroll expected = GenerateSeedPayroll("DYYJ", "2207-1",  "MANILAIDCSI0000", 19000, 20000, 17000, -1000, -1000, -1000);
 
             _payrollManager.SavePayroll(expected);
 
-            Payroll actual = _payrollProvider.GetPayrolls("2207-1", BankChoices.LBP).Where(p => p.PayrollId == expected.PayrollId).FirstOrDefault();
+            Payroll actual = _payrollProvider.GetPayrolls(expected.CutoffId, expected.PayrollCode).Where(p => p.PayrollId == expected.PayrollId).FirstOrDefault();
             Assert.NotNull(actual);
         }
     }

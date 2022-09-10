@@ -17,27 +17,40 @@ using Pms.Payrolls.ServiceLayer.Files.Exports.Bank_Report;
 
 namespace Pms.Payrolls.Files.Exports.Tests
 {
-    public class LBPExportTests
+    public class BankReportExportTests
     {
         private IDbContextFactory<PayrollDbContext> _factory;
         private IProvidePayrollService _payrollProvider;
 
-        public LBPExportTests()
+        public BankReportExportTests()
         {
             _factory = new PayrollDbContextFactoryFixture();
             _payrollProvider = new PayrollProvider(_factory);
         }
 
         [Fact()]
-        public void ShouldExportPayroll()
+        public void ShouldExportInMBFormat()
         {
-            string cutoffId = "2208-2";
-            string payrollCode = "P1A";
-            BankChoices bankType = BankChoices.LBP;
-            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, payrollCode, bankType);
+            string cutoffId = "2209-1";
+            string payrollCode = "P4A";
+            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, payrollCode);
 
-            BankReportBase exporter = new(bankType);
-            exporter.StartExport(payrolls.ToArray(), cutoffId, payrollCode);
+            BankReportBase exporter = new(cutoffId, payrollCode);
+            exporter.StartExport(payrolls.ToArray());
         }
+
+
+        [Fact()]
+        public void ShouldExportInLbpCbcChkFormat()
+        {
+            string cutoffId = "2208-1";
+            string payrollCode = "P1A";
+            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, payrollCode);
+
+            BankReportBase exporter = new(cutoffId, payrollCode);
+            exporter.StartExport(payrolls.ToArray());
+        }
+
+
     }
 }

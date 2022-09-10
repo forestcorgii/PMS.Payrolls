@@ -25,10 +25,20 @@ namespace Pms.Payrolls.Domain
         public string PayrollCode { get; set; }
 
         public double RegHours { get; set; }
+
         public double Overtime { get; set; }
+        public double OvertimeAmount { get => Overtime * Rate * 1.25; }
+
         public double RestDayOvertime { get; set; }
+        public double RestDayOvertimeAmount { get => RestDayOvertime * Rate * 1.3; }
+
         public double HolidayOvertime { get; set; }
+        public double HolidayOvertimeAmount { get => HolidayOvertime * Rate * 2.0; }
+
         public double NightDifferential { get; set; }
+        public double NightDifferentialAmount { get => NightDifferential * Rate * 0.1; }
+
+
         public double AbsTar { get; set; }// Absent & Tardy
 
         public double GrossPay { get; set; }
@@ -55,11 +65,15 @@ namespace Pms.Payrolls.Domain
         {
             get
             {
-                if (RegHours > 96)
-                {
-                    double AdjustedRegHours = RegHours - AbsTar;
-                    return RegularPay / AdjustedRegHours;
-                }
+                double AdjustedRegHours = RegHours - AbsTar;
+                return RegularPay / AdjustedRegHours;
+            }
+        }
+
+        public double OriginalRate
+        {
+            get
+            {
                 return RegularPay / RegHours;
             }
         }

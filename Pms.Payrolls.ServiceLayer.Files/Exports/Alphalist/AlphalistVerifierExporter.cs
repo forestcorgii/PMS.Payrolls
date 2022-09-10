@@ -36,7 +36,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             IRow row = sheet.CreateRow(append(ref rowIndex));
             WriteHeader(row);
 
-            foreach (var employeePayroll in employeePayrolls)
+            foreach (IEnumerable<Payroll> employeePayroll in employeePayrolls)
             {
                 Payroll temp = employeePayroll.First();
                 WriteEmployeeData(sheet.CreateRow(append(ref rowIndex)), temp.EEId, temp.EE);
@@ -44,6 +44,8 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                 foreach (Payroll payroll in employeePayroll)
                     WriteData(sheet.CreateRow(append(ref rowIndex)), payroll);
 
+                append(ref rowIndex);
+                WriteTotal(sheet.CreateRow(append(ref rowIndex)), employeePayroll);
                 append(ref rowIndex);
                 append(ref rowIndex);
             }
@@ -53,17 +55,22 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
         {
             int columnIndex = -1;
             row.CreateCell(append(ref columnIndex)).SetCellValue("CUTOFF DATE");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("RATE");
             row.CreateCell(append(ref columnIndex)).SetCellValue("REG HRS");
             row.CreateCell(append(ref columnIndex)).SetCellValue("OT");
+
             row.CreateCell(append(ref columnIndex)).SetCellValue("R_OT");
             row.CreateCell(append(ref columnIndex)).SetCellValue("H_OT");
             row.CreateCell(append(ref columnIndex)).SetCellValue("ND");
+            
             row.CreateCell(append(ref columnIndex)).SetCellValue("TARDY");
+            
             row.CreateCell(append(ref columnIndex)).SetCellValue("SSS");
             row.CreateCell(append(ref columnIndex)).SetCellValue("PAGIBIG");
             row.CreateCell(append(ref columnIndex)).SetCellValue("PHIC");
             row.CreateCell(append(ref columnIndex)).SetCellValue("TAX");
             row.CreateCell(append(ref columnIndex)).SetCellValue("REG PAY");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("REG PAY_13th MONTH");
             row.CreateCell(append(ref columnIndex)).SetCellValue("GROSS PAY");
             row.CreateCell(append(ref columnIndex)).SetCellValue("NET PAY");
         }
@@ -81,19 +88,48 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
         {
             int columnIndex = -1;
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.Cutoff.CutoffDate.ToString("MMM dd, yyyy"));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.Rate);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.RegHours);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.Overtime);
+
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.RestDayOvertime);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.HolidayOvertime);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.NightDifferential);
+
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.AbsTar);
+
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.EmployeeSSS);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.EmployeePagibig);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.EmployeePhilHealth);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.WithholdingTax);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.RegularPay);
+            row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.AdjustedRegPay);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.GrossPay);
             row.CreateCell(append(ref columnIndex)).SetCellValue(payroll.NetPay);
+        }
+
+        private void WriteTotal(IRow row, IEnumerable<Payroll> employeePayroll)
+        {
+            int columnIndex = -1;
+            row.CreateCell(append(ref columnIndex)).SetCellValue("TOTAL");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+
+            row.CreateCell(append(ref columnIndex)).SetCellValue("");
+
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.EmployeeSSS));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.EmployeePagibig));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.EmployeePhilHealth));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.WithholdingTax));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.RegularPay));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.AdjustedRegPay));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.GrossPay));
+            row.CreateCell(append(ref columnIndex)).SetCellValue(employeePayroll.Sum(p => p.NetPay));
         }
 
 

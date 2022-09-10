@@ -37,10 +37,9 @@ namespace Pms.Payrolls.Tests
             Cutoff cutoff = new();
             List<Payroll> payrolls = new()
             {
-                GenerateSeedPayroll("DYYJ", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
-                GenerateSeedPayroll("DYYZ", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
-                GenerateSeedPayroll("DYYN", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
-                GenerateSeedPayroll("DYYK", cutoff.CutoffId, BankChoices.LBP, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYZ", cutoff.CutoffId, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYN", cutoff.CutoffId, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
+                GenerateSeedPayroll("DYYK", cutoff.CutoffId, "MANILAIDCSI0000", 10000, 10000, 10000, 1000, -500, -1000),
             };
 
             foreach (Payroll payroll in payrolls)
@@ -51,7 +50,7 @@ namespace Pms.Payrolls.Tests
             context.SaveChanges();
         }
 
-       
+
 
         public PayrollDbContextFactory Factory;
         public void CreateFactory()

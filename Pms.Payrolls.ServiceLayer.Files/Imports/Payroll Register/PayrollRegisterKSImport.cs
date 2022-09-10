@@ -13,14 +13,18 @@ namespace Pms.Payrolls.ServiceLayer.Files
 {
     public class PayrollRegisterKSImport : IImportPayrollService
     {
-        private int NameIndex = -1;
-        private int RegularHoursIndex = -1;
-        private int GrossPayIndex = -1;
-        private int NetpayIndex = -1;
+        private int NameIndex = 1;
+        
+        private int RegularHoursIndex = 2;
+        private int NightDifferentialIndex = 6;
+        private int WithholdingTaxIndex = 12;
+        
+        private int GrossPayIndex = 5;
+        private int NetpayIndex = 15;
 
-        private int EmployeeSSSIndex = -1;
-        private int EmployeePagibigIndex = -1;
-        private int EmployeePhilHealthIndex = -1;
+        private int EmployeePagibigIndex = 7;
+        private int EmployeeSSSIndex = 9;
+        private int EmployeePhilHealthIndex = 11;
 
         private string PayrollRegisterFilePath;
 
@@ -28,15 +32,8 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
         public void ValidatePayRegisterFile()
         {
-            if (NameIndex == -1) throw new PayrollRegisterHeaderNotFoundException( "Name", PayrollRegisterFilePath);
-            if(RegularHoursIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Regular Hours", PayrollRegisterFilePath);
-            if (GrossPayIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Gross Pay", PayrollRegisterFilePath);
-            if (NetpayIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Net Pay", PayrollRegisterFilePath);
-            if (EmployeeSSSIndex == -1) throw new PayrollRegisterHeaderNotFoundException("SSS EE", PayrollRegisterFilePath);
-            if (EmployeePagibigIndex == -1) throw new PayrollRegisterHeaderNotFoundException("Pagibig EE", PayrollRegisterFilePath);
-            if (EmployeePhilHealthIndex == -1) throw new PayrollRegisterHeaderNotFoundException("PhilHealth EE", PayrollRegisterFilePath);
 
-            if (CutoffDate == default) throw new PayrollRegisterHeaderNotFoundException( "Cutoff Date", PayrollRegisterFilePath);
+            if (CutoffDate == default) throw new PayrollRegisterHeaderNotFoundException("Cutoff Date", PayrollRegisterFilePath);
         }
 
 
@@ -60,14 +57,10 @@ namespace Pms.Payrolls.ServiceLayer.Files
                     do
                     {
                         string eeId = "";
-                        if (NameIndex > -1)
-                        {
-                            var name_args = ParseEmployeeDetail(reader, NameIndex);
-                            if (name_args is null)
-                                continue;
-                            eeId = name_args[1].Trim();
-                        }
-
+                        var name_args = ParseEmployeeDetail(reader, 1);
+                        if (name_args is null)
+                            continue;
+                        eeId = name_args[1].Trim();
 
                         var newPayroll = new Payroll()
                         {
@@ -76,10 +69,20 @@ namespace Pms.Payrolls.ServiceLayer.Files
                             YearCovered = cutoff.YearCovered,
                         };
 
-                        newPayroll.RegularPay = reader.GetDouble(GrossPayIndex);
                         newPayroll.RegHours = reader.GetDouble(RegularHoursIndex);
+                        
+                        newPayroll.RegularPay = reader.GetDouble(GrossPayIndex);
                         newPayroll.GrossPay = reader.GetDouble(GrossPayIndex);
-                        newPayroll.NetPay = reader.GetDouble(NetpayIndex);
+                        
+                        newPayroll.NightDifferential = reader.GetDouble(NightDifferentialIndex);
+                        
+                        newPayroll.EmployeePagibig= reader.GetDouble(EmployeePagibigIndex);
+                        newPayroll.EmployeeSSS= reader.GetDouble(EmployeeSSSIndex);
+                        newPayroll.EmployeePhilHealth= reader.GetDouble(EmployeePhilHealthIndex);
+                        
+                        newPayroll.WithholdingTax = reader.GetDouble(WithholdingTaxIndex);
+
+                        newPayroll.NetPay = reader.GetDouble(15);
                         newPayroll.PayrollId = Payroll.GenerateId(newPayroll);
 
 

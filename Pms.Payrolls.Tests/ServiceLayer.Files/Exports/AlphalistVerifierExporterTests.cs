@@ -31,7 +31,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Tests
         {
             Company company = new() { RegisteredName = "TEST COMPANY", MinimumRate = 71.25 };
             int yearCovered = 2022;
-            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(yearCovered, BankChoices.LBP);
+            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(yearCovered, company.CompanyId);
             var employeePayrolls = payrolls.GroupBy(py => py.EEId).Select(py => py.ToList()).ToList();
 
             AlphalistVerifierExporter exporter = new();

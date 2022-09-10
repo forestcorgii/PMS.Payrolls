@@ -23,28 +23,26 @@ namespace Pms.Payrolls.Domain.SupportTypes
         private string EmploymentStatus { get; set; }
         #endregion
 
-        private int FactorUsed { get; set; } = 313;
+        private int FactorUsed { get; set; }
 
         private double PresentTaxableSalary;
 
         private double PresentTaxable13thMonth;
 
         #region PerDay-specific Properties
+        private double ActualHourlyRate = 0;
         private double PresentNonTaxableBasicSmwHour = 0;
         private double PresentNonTaxableBasicSmwDay => PresentNonTaxableBasicSmwHour * 8;
         private double PresentNonTaxableBasicSmwMonth => int.Parse(PresentNonTaxableBasicSmwDay.ToString("0.00").Split(".")[0]) * 24;
         private double PresentNonTaxableBasicSmwYear => PresentNonTaxableBasicSmwMonth * 12;
 
-        private double Overtime;
-        private double OvertimeAmount => Overtime * PresentNonTaxableBasicSmwHour * 1.25;
-        private double RestDayOvertime;
-        private double RestDayOvertimeAmount => RestDayOvertime * PresentNonTaxableBasicSmwHour * 1.3;
+        private double OvertimeAmount;
 
-        private double HolidayOvertime;
-        private double PresentNonTaxableHolidayPay => HolidayOvertime * PresentNonTaxableBasicSmwHour * 2.0;
+        private double RestDayOvertimeAmount ;
 
-        private double NightDifferential;
-        private double PresentNonTaxableNightDifferential => NightDifferential * PresentNonTaxableBasicSmwHour * 0.1;
+        private double PresentNonTaxableHolidayPay ;
+
+        private double PresentNonTaxableNightDifferential ;
 
         private double PresentNonTaxableOvertimePay => OvertimeAmount + RestDayOvertimeAmount;
         #endregion
@@ -147,7 +145,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
             }
         }
 
-        private double AcutalAmountWithheld
+        private double ActualAmountWithheld
         {
             get
             {
@@ -166,7 +164,13 @@ namespace Pms.Payrolls.Domain.SupportTypes
         public AutomatedAlphalistDetail(IEnumerable<Payroll> yearlyPayrolls, double minimumRate)
         {
             Payroll payroll = yearlyPayrolls.First();
+
+            ActualHourlyRate = payroll.Rate;
+
             PresentNonTaxableBasicSmwHour = payroll.Rate > minimumRate ? payroll.Rate : minimumRate;
+
+
+            FactorUsed = payroll.Rate <= minimumRate ? 313 : 0;
 
             EmployeeView ee = payroll.EE;
             EEId = ee.EEId;
@@ -182,10 +186,10 @@ namespace Pms.Payrolls.Domain.SupportTypes
             ResignationDate = yearlyPayrolls.Last().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
 
 
-            Overtime = yearlyPayrolls.Sum(py => py.Overtime);
-            RestDayOvertime = yearlyPayrolls.Sum(py => py.RestDayOvertime);
-            HolidayOvertime = yearlyPayrolls.Sum(py => py.HolidayOvertime);
-            NightDifferential = yearlyPayrolls.Sum(py => py.NightDifferential);
+            OvertimeAmount = yearlyPayrolls.Sum(py => py.OvertimeAmount);
+            RestDayOvertimeAmount = yearlyPayrolls.Sum(py => py.RestDayOvertimeAmount);
+            PresentNonTaxableHolidayPay = yearlyPayrolls.Sum(py => py.HolidayOvertimeAmount);
+            PresentNonTaxableNightDifferential = yearlyPayrolls.Sum(py => py.NightDifferentialAmount);
 
             RegularPay = yearlyPayrolls.Sum(py => py.RegularPay);
             GrossPay = yearlyPayrolls.Sum(py => py.GrossPay);
@@ -212,9 +216,9 @@ namespace Pms.Payrolls.Domain.SupportTypes
             a.LastName = LastName;
             a.MiddleName = MiddleName;
             a.Tin = TIN;
-            a.StartDate =DateTime.Parse( StartDate);
+            a.StartDate = DateTime.Parse(StartDate);
             a.ResignationDate = DateTime.Parse(ResignationDate);
-            a.AcutalAmountWithheld = AcutalAmountWithheld;
+            a.AcutalAmountWithheld = ActualAmountWithheld;
             a.FactorUsed = FactorUsed;
             a.PresentTaxableSalary = PresentTaxableSalary;
             a.PresentTaxable13thMonth = PresentTaxable13thMonth;

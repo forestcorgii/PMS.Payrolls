@@ -22,7 +22,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Tests
                 BranchCode = "0000",
                 MinimumRate = 71.25
             };
-            string alphalistFilepath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\AlphalistImportTests\TEST COMPANY_2022-Alpha(4).xls";
+            string alphalistFilepath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\AlphalistImportTests\INTERNATIONAL DATA CONVERSION SOLUTIONS INC_2022-Alpha(14).xls";
             string birDbfFilepath = @"C:\BIRALPHA70\DATA";
 
             AlphalistImport importer = new();

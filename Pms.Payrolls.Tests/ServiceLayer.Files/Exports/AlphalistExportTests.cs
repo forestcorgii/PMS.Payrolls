@@ -29,9 +29,9 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Tests
         [Fact()]
         public void ShouldExportAlphalist()
         {
-            Company company = new() { RegisteredName = "TEST COMPANY", MinimumRate = 71.25 };
-            int yearCovered = 2022;
-            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(yearCovered, BankChoices.LBP);
+            Company company = new() { CompanyId="", RegisteredName = "TEST COMPANY", MinimumRate = 71.25 };
+            int yearCovered = 2021;
+            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(yearCovered, company.CompanyId);
             var employeePayrolls = payrolls.GroupBy(py => py.EEId).Select(py => py.ToList()).ToList();
 
             List<AlphalistDetail> alphalists = new();

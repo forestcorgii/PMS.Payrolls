@@ -10,7 +10,7 @@ namespace Pms.Payrolls.Tests
 {
     static class Seeder
     {
-        public static Payroll GenerateSeedPayroll(string eeId, string cutoffId, BankChoices bank,string companyId, double grossPay, double regPay, double netPay, double adjust1Total, double adjust2Total, double governmentTotal)
+        public static Payroll GenerateSeedPayroll(string eeId, string cutoffId, string companyId, double grossPay, double regPay, double netPay, double adjust1Total, double adjust2Total, double governmentTotal)
         {
             Payroll payroll = new()
             {
