@@ -15,7 +15,7 @@ namespace Pms.Payrolls.Persistence
             builder.Property(cc => cc.RegisteredName).HasColumnType("VARCHAR(100)").IsRequired();
             builder.Property(cc => cc.Region).HasColumnType("VARCHAR(10)");
             builder.Property(cc => cc.Acronym).HasColumnType("VARCHAR(10)").IsRequired();
-            builder.Property(cc => cc.BranchCode).HasColumnType("VARCHAR(10)");
+            builder.Property(cc => cc.BranchCode).HasColumnType("TINYINT");
             builder.Property(cc => cc.TIN).HasColumnType("VARCHAR(20)");
             builder.Property(cc => cc.Site).HasColumnType("VARCHAR(20)");
 

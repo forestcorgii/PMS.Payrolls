@@ -38,29 +38,29 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         private double OvertimeAmount;
 
-        private double RestDayOvertimeAmount ;
+        private double RestDayOvertimeAmount;
 
-        private double PresentNonTaxableHolidayPay ;
+        private double PresentNonTaxableHolidayPay;
 
-        private double PresentNonTaxableNightDifferential ;
+        private double PresentNonTaxableNightDifferential;
 
         private double PresentNonTaxableOvertimePay => OvertimeAmount + RestDayOvertimeAmount;
         #endregion
 
         #region PAY
-        private double RegularPay;
+        //private double RegularPay;
         private double GrossPay;
-        private double NetPay;
+        //private double NetPay;
 
-        private double Taxable13thMonth
-        {
-            get
-            {
-                //if (NonTaxable13thMonth > 250000)
-                //    return NonTaxable13thMonth - 250000;
-                return 0;
-            }
-        }
+        //private double Taxable13thMonth
+        //{
+        //    get
+        //    {
+        //        //if (NonTaxable13thMonth > 250000)
+        //        //    return NonTaxable13thMonth - 250000;
+        //        return 0;
+        //    }
+        //}
         private double PresentNonTaxable13thMonth;
 
         private double NonTaxableSalary
@@ -191,9 +191,9 @@ namespace Pms.Payrolls.Domain.SupportTypes
             PresentNonTaxableHolidayPay = yearlyPayrolls.Sum(py => py.HolidayOvertimeAmount);
             PresentNonTaxableNightDifferential = yearlyPayrolls.Sum(py => py.NightDifferentialAmount);
 
-            RegularPay = yearlyPayrolls.Sum(py => py.RegularPay);
             GrossPay = yearlyPayrolls.Sum(py => py.GrossPay);
-            NetPay = yearlyPayrolls.Sum(py => py.NetPay);
+            //RegularPay = yearlyPayrolls.Sum(py => py.RegularPay);
+            //NetPay = yearlyPayrolls.Sum(py => py.NetPay);
 
             EmployeeSSS = yearlyPayrolls.Sum(py => py.EmployeeSSS);
             EmployeePagibig = yearlyPayrolls.Sum(py => py.EmployeePagibig);

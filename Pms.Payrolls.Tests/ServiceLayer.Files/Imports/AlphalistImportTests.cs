@@ -19,7 +19,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Tests
                 RegisteredName = "INTERNATIONAL DATA CONVERSION SOLUTIONS INC",
                 Region = "VII",
                 TIN = "214271279",
-                BranchCode = "0000",
+                BranchCode = 0,
                 MinimumRate = 71.25
             };
             string alphalistFilepath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\AlphalistImportTests\INTERNATIONAL DATA CONVERSION SOLUTIONS INC_2022-Alpha(14).xls";

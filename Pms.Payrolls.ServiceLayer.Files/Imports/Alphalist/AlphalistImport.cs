@@ -88,7 +88,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
         private AlphalistDetail GetDetail(IRow row, Company company, string schedule, int sequence)
         {
             AlphalistDetail alpha = new();
-            alpha.EmployerBranchCode = company.BranchCode;
+            alpha.EmployerBranchCode = company.BranchCode.ToString("0000");
             alpha.EmployerTin = company.TIN;
             alpha.ScheduleNumber = schedule;
             alpha.SequenceNumber = sequence;
