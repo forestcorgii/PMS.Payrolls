@@ -15,7 +15,6 @@ namespace Pms.Payrolls.Domain.Services
         IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode);
         IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode, BankChoices bankType);
         IEnumerable<Payroll> GetAllPayrolls();
-        IEnumerable<Company> GetAllCompanies();
         IEnumerable<Payroll> GetNoEEPayrolls();
     }
 }

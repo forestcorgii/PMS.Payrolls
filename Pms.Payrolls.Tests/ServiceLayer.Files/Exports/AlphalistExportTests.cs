@@ -29,7 +29,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Tests
         [Fact()]
         public void ShouldExportAlphalist()
         {
-            Company company = new() { CompanyId="", RegisteredName = "TEST COMPANY", MinimumRate = 71.25 };
+            CompanyView company = new();// { CompanyId="", RegisteredName = "TEST COMPANY", MinimumRate = 71.25 };
             int yearCovered = 2021;
             IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(yearCovered, company.CompanyId);
             var employeePayrolls = payrolls.GroupBy(py => py.EEId).Select(py => py.ToList()).ToList();
@@ -41,7 +41,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Tests
             Assert.NotEmpty(alphalists);
 
             AlphalistExporter exporter = new();
-            exporter.StartExport(alphalists, yearCovered, company);
+            exporter.StartExport(alphalists, yearCovered, company.CompanyId,company.MinimumRate);
         }
     }
 }

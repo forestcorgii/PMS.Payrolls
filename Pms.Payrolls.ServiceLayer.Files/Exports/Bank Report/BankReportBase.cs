@@ -21,6 +21,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Bank_Report
             Exporters.Add(BankChoices.CHK, new CHKExporter(cutoff, payrollCode));
             Exporters.Add(BankChoices.LBP, new LBPExporter(cutoff, payrollCode));
             Exporters.Add(BankChoices.CBC, new CBCExporter(cutoff, payrollCode));
+            Exporters.Add(BankChoices.CBC1, new CBCExporter(cutoff, payrollCode));
             Exporters.Add(BankChoices.MPALO, new MBExporter(cutoff, payrollCode, "MPALO"));
             Exporters.Add(BankChoices.MTAC, new MBExporter(cutoff, payrollCode, "MTAC"));
         }

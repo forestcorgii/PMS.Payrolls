@@ -14,14 +14,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Tests
         [Fact()]
         public void ShouldImportAlphalistsToBirProgram()
         {
-            Company company = new()
-            {
-                RegisteredName = "INTERNATIONAL DATA CONVERSION SOLUTIONS INC",
-                Region = "VII",
-                TIN = "214271279",
-                BranchCode = 0,
-                MinimumRate = 71.25
-            };
+            CompanyView company = new();
             string alphalistFilepath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\AlphalistImportTests\INTERNATIONAL DATA CONVERSION SOLUTIONS INC_2022-Alpha(14).xls";
             string birDbfFilepath = @"C:\BIRALPHA70\DATA";
 

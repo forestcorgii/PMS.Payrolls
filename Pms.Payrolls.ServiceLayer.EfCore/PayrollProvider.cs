@@ -99,11 +99,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             return payrolls;
         }
 
-        public IEnumerable<Company> GetAllCompanies()
-        {
-            PayrollDbContext Context = _factory.CreateDbContext();
-            return Context.Companies.ToList();
-        }
+
 
     }
 }

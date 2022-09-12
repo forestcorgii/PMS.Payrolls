@@ -9,7 +9,7 @@ namespace Pms.Payrolls.Persistence
         public DbSet<Payroll> Payrolls => Set<Payroll>();
         public DbSet<EmployeeView> Employees => Set<EmployeeView>();
         public DbSet<TimesheetView> Timesheets => Set<TimesheetView>();
-        public DbSet<Company> Companies => Set<Company>();
+        public DbSet<CompanyView> Companies => Set<CompanyView>();
 
         public PayrollDbContext(DbContextOptions options) : base(options) { }
          

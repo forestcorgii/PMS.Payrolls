@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pms.Payrolls.Domain
+namespace Pms.Payrolls._Domain
 {
     public class Company
     {
@@ -21,6 +21,5 @@ namespace Pms.Payrolls.Domain
         public static string GenerateId(Company company) => $"{company.Site[0]}{company.Acronym}{company.BranchCode:00}";
 
         public override string ToString() => CompanyId;
-
     }
 }

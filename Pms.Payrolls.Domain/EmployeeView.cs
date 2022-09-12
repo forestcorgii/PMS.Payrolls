@@ -13,14 +13,35 @@ namespace Pms.Payrolls.Domain
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string MiddleName { get; private set; }
+        public string NameExtension { get; private set; } = "";
+
         public string Fullname
         {
             get
             {
-                if (FirstName is null || LastName is null) { return ""; }
-                string _fullName = $"{LastName}, {FirstName}";
-                if (MiddleName == "" || MiddleName is null) { _fullName = $"{_fullName}."; } else { _fullName = $"{_fullName} {MiddleName.Substring(0, 1)}."; }
-                return _fullName;
+                string lastname = LastName;
+                string firstname = FirstName != string.Empty ? $", {FirstName}" : "";
+                string middleInitial = MiddleName != string.Empty ? $" {MiddleName?[0]}" : "";
+                string nameExtension = NameExtension != string.Empty ? $" {NameExtension}" : "";
+                string fullName = $"{lastname}{firstname}{middleInitial}{nameExtension}.";
+
+                return fullName;
+            }
+        }
+        /// <summary>
+        /// FML - {Firstname} {Middle Initial}. {Lastname}
+        /// </summary>
+        public string Fullname_FML
+        {
+            get
+            {
+                string firstname = FirstName != string.Empty ? $"{FirstName}" : "";
+                string middleInitial = MiddleName != string.Empty ? $" {MiddleName?[0]}." : "";
+                string lastname = LastName != string.Empty ? $" {LastName}" : ""; 
+                string nameExtension = NameExtension != string.Empty ? $" {NameExtension}" : "";
+                string fullName = $"{firstname}{middleInitial}{lastname}{nameExtension}";
+
+                return fullName;
             }
         }
         public string TIN { get; private set; }

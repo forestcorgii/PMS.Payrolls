@@ -13,20 +13,20 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
 {
     public class AlphalistExporter
     {
-        public void StartExport(IEnumerable<AlphalistDetail> alphalists, int year, Company company)
+        public void StartExport(IEnumerable<AlphalistDetail> alphalists, int year, string companyId,double minimumRate)
         {
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = $@"{startupPath}\EXPORT\Alphalist";
             Directory.CreateDirectory(filePath);
-            string filename = $"{company.RegisteredName}_{year}-Alpha".AppendFile(filePath);
+            string filename = $"{companyId}_{year}-Alpha".AppendFile(filePath);
 
             IWorkbook workbook = new HSSFWorkbook();
 
             ISheet sheet = workbook.CreateSheet("D1");
-            WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour > company.MinimumRate), sheet, AlphalistScheduleNumberChoices.D1);
+            WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour > minimumRate), sheet, AlphalistScheduleNumberChoices.D1);
 
             sheet = workbook.CreateSheet("D2");
-            WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour <= company.MinimumRate), sheet, AlphalistScheduleNumberChoices.D2);
+            WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour <= minimumRate), sheet, AlphalistScheduleNumberChoices.D2);
 
             using (var nTemplateFile = new FileStream(filename, FileMode.Create, FileAccess.Write))
                 workbook.Write(nTemplateFile);

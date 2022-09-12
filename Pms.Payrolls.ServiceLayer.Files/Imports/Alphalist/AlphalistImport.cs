@@ -17,7 +17,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
     public class AlphalistImport
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-        public void ImportToBIRProgram(string alphalistFilepath, string birProgramDataDirectory, Company company)
+        public void ImportToBIRProgram(string alphalistFilepath, string birProgramDataDirectory, CompanyView company)
         {
             IWorkbook workbook;
             using (var alphalistFile = new FileStream(alphalistFilepath, FileMode.Open, FileAccess.Read))
@@ -85,7 +85,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             index++;
             return index;
         }
-        private AlphalistDetail GetDetail(IRow row, Company company, string schedule, int sequence)
+        private AlphalistDetail GetDetail(IRow row, CompanyView company, string schedule, int sequence)
         {
             AlphalistDetail alpha = new();
             alpha.EmployerBranchCode = company.BranchCode.ToString("0000");

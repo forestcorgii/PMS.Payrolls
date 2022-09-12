@@ -89,7 +89,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                 var rec = payrollRecords[i];
                 row = sheet.CreateRow(i + 1);
                 row.CreateCell(0).SetCellValue(rec.EEId);
-                row.CreateCell(1).SetCellValue(rec.EE.Fullname);
+                row.CreateCell(1).SetCellValue(rec.EE.Fullname_FML);
                 row.CreateCell(2).SetCellValue(rec.NetPay);
             }
         }
