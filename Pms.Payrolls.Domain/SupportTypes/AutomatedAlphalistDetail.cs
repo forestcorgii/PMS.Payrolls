@@ -48,8 +48,8 @@ namespace Pms.Payrolls.Domain.SupportTypes
         #endregion
 
         #region PAY
-        //private double RegularPay;
         private double GrossPay;
+        //private double RegularPay;
         //private double NetPay;
 
         //private double Taxable13thMonth

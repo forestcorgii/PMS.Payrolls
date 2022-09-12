@@ -102,7 +102,7 @@ namespace Pms.Payrolls.Domain
         private double ConvertToPositive(double value)
         {
             if (value < 0)//ensure negative value    
-                return value = value - (value * 2);
+                return value - (value * 2);
             return value;
         }
     }
