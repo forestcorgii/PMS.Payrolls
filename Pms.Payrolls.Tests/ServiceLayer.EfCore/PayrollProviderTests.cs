@@ -23,21 +23,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore.Tests
             _factory = new PayrollDbContextFactoryFixture();
             _payrollProvider = new PayrollProvider(_factory);
         }
-
-        [Theory]
-        [InlineData("2208-2", BankChoices.LBP)]
-        public void ShouldGetAccuratePayrollsByCutoffIdAndBankType(string cutoffId, BankChoices bank)
-        {
-            _payrollProvider.GetPayrolls(cutoffId,bank);
-        }
-
-        [Theory]
-        [InlineData("2208-2", "P1A",BankChoices.LBP)]
-        public void ShouldGetAccuratePayrollsByCutoffIdPayrollCodeAndBankType(string cutoffId,string payrollCode,BankChoices bank)
-        {
-            _payrollProvider.GetPayrolls(cutoffId, payrollCode, bank);
-        }
-
+         
         [Theory]
         [InlineData(2022,"")]
         public void ShouldGetAccuratePayrollsByYearsCovoredAndCompanyId(int yearsCovered, string companyId)

@@ -43,6 +43,9 @@
     <None Update="TESTDATA\PayRegisterImportTests\K13202208B.XLS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TESTDATA\PayRegisterImportTests\K9APAYREG.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TESTDATA\PayRegisterImportTests\P1A202201B.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

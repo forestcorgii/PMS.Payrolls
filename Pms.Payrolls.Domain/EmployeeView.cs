@@ -27,7 +27,8 @@ namespace Pms.Payrolls.Domain
 
                 return fullName;
             }
-        }
+        } 
+        
         /// <summary>
         /// FML - {Firstname} {Middle Initial}. {Lastname}
         /// </summary>
@@ -35,10 +36,10 @@ namespace Pms.Payrolls.Domain
         {
             get
             {
-                string firstname = FirstName != string.Empty ? $"{FirstName}" : "";
-                string middleInitial = MiddleName != string.Empty ? $" {MiddleName?[0]}." : "";
-                string lastname = LastName != string.Empty ? $" {LastName}" : ""; 
-                string nameExtension = NameExtension != string.Empty ? $" {NameExtension}" : "";
+                string firstname = FirstName is not null && FirstName != string.Empty ? $"{FirstName}" : "";
+                string middleInitial = MiddleName is not null && MiddleName != string.Empty ? $" {MiddleName?[0]}." : "";
+                string lastname = LastName is not null && LastName != string.Empty ? $" {LastName}" : ""; 
+                string nameExtension = NameExtension is not null && NameExtension != string.Empty ? $" {NameExtension}" : "";
                 string fullName = $"{firstname}{middleInitial}{lastname}{nameExtension}";
 
                 return fullName;

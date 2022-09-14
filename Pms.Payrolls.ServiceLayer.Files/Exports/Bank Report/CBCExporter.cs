@@ -13,28 +13,29 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
     {
         private Cutoff _cutoff;
         private string _payrollCode;
+        private string _bankName;
 
-        public CBCExporter(Cutoff cutoff, string payrollCode)
+        public CBCExporter(Cutoff cutoff, string payrollCode, string bankName = "")
         {
             _cutoff = cutoff;
             _payrollCode = payrollCode;
+            _bankName = bankName;
         }
 
         public void StartExport(IEnumerable<Payroll> payrolls)
         {
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
 
-            string filePath = $@"{startupPath}\EXPORT\{_cutoff.CutoffId}\{_payrollCode}\BANK REPORT\CBC";
-            string filename = $@"{filePath}\{_payrollCode}_{_cutoff.CutoffDate:yyyyMMdd}-CBC.xls";
+            string filePath = $@"{startupPath}\EXPORT\{_cutoff.CutoffId}\{_payrollCode}\BANK REPORT\{_bankName}";
+            string filename = $@"{filePath}\{_payrollCode}_{_cutoff.CutoffDate:yyyyMMdd}-{_bankName}.xls";
             Directory.CreateDirectory(filePath);
             
             string templatePath = $@"{startupPath}\TEMPLATES\CBC.xls";
             File.Copy(templatePath, filename,true);
 
             payrolls = payrolls.OrderBy(p => p.EE.Fullname);
-            IEnumerable<Payroll> validPayrolls = payrolls.Where(p => !p.IsReadyForExport());
 
-            GenerateXls(filename, validPayrolls.ToArray());
+            GenerateXls(filename, payrolls.ToArray());
         }
 
         private static void GenerateXls(string filename, Payroll[] payrolls)

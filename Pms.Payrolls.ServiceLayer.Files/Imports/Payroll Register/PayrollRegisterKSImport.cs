@@ -17,14 +17,14 @@ namespace Pms.Payrolls.ServiceLayer.Files
         
         private int RegularHoursIndex = 2;
         private int NightDifferentialIndex = 6;
-        private int WithholdingTaxIndex = 12;
+        private int WithholdingTaxIndex = 11;
         
         private int GrossPayIndex = 5;
-        private int NetpayIndex = 15;
+        private int NetpayIndex = 14;
 
         private int EmployeePagibigIndex = 7;
         private int EmployeeSSSIndex = 9;
-        private int EmployeePhilHealthIndex = 11;
+        private int EmployeePhilHealthIndex = 12;
 
         private string PayrollRegisterFilePath;
 
@@ -48,7 +48,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    FindHeaders(reader);
+                    //FindHeaders(reader);
                     FindCutoffDate(reader);
 
                     ValidatePayRegisterFile();
@@ -82,7 +82,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                         
                         newPayroll.WithholdingTax = reader.GetDouble(WithholdingTaxIndex);
 
-                        newPayroll.NetPay = reader.GetDouble(15);
+                        newPayroll.NetPay = reader.GetDouble(NetpayIndex);
                         newPayroll.PayrollId = Payroll.GenerateId(newPayroll);
 
 
@@ -136,6 +136,9 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
         private void FindCutoffDate(IExcelDataReader reader)
         {
+            reader.Read();
+            reader.Read();
+            reader.Read();
             CheckCutoffDate(reader);
             reader.Read();
             CheckCutoffDate(reader);

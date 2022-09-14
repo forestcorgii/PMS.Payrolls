@@ -34,24 +34,14 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Where(p => p.CutoffId == cutoffId)
                 .ToList();
         }
-        public IEnumerable<Payroll> GetPayrolls(string cutoffId, BankChoices bank)
+        public IEnumerable<Payroll> GetPayrolls(string cutoffId,string payrollCode)
         {
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls
                 .Include(p => p.EE)
                 .Include(p => p.TS)
                 .Where(p => p.CutoffId == cutoffId)
-                .Where(p => p.EE.Bank == bank)
-                .ToList();
-        }
-        public IEnumerable<Payroll> GetPayrolls(int yearsCovered, BankChoices bank)
-        {
-            using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls
-                .Include(p => p.EE)
-                .Include(p => p.TS)
-                .Where(p => p.YearCovered == yearsCovered)
-                .Where(p => p.EE.Bank == bank)
+                .Where(p => p.PayrollCode == payrollCode)
                 .ToList();
         }
         public IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId)
@@ -62,27 +52,6 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Include(p => p.TS)
                 .Where(p => p.YearCovered == yearsCovered)
                 .Where(p => p.CompanyId == companyId)
-                .ToList();
-        }
-        public IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode, BankChoices bankType)
-        {
-            using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls
-                .Include(p => p.EE)
-                .Include(p => p.TS)
-                .Where(p => p.CutoffId == cutoffId)
-                .Where(p => p.PayrollCode == payrollCode)
-                .Where(p => p.EE.Bank == bankType)
-                .ToList();
-        }
-        public IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode)
-        {
-            using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls
-                .Include(p => p.EE)
-                .Include(p => p.TS)
-                .Where(p => p.CutoffId == cutoffId)
-                .Where(p => p.PayrollCode == payrollCode)
                 .ToList();
         }
 
@@ -98,7 +67,6 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
 
             return payrolls;
         }
-
 
 
     }

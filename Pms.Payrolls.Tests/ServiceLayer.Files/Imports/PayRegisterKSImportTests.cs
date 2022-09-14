@@ -43,5 +43,20 @@ namespace Pms.Payrolls.Files.Tests
             Assert.NotEmpty(actualPayrolls);
             Assert.True(actualPayrolls[0].RegHours > 0);
         }
+
+
+        [Fact()]
+        public void ShouldImportK9APayroll()
+        {
+            IImportPayrollService payregImporter = new PayrollRegisterImportBase(Enums.ImportProcessChoices.KS);
+            string payregFilePath = $@"{ AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\PayRegisterImportTests\K9APAYREG.xls";
+            List<Payroll> actualPayrolls = payregImporter.StartImport(payregFilePath).ToList();
+
+            Assert.NotNull(actualPayrolls);
+            Assert.NotEmpty(actualPayrolls);
+            Assert.True(actualPayrolls[0].RegHours > 0);
+        }
+
+        
     }
 }
