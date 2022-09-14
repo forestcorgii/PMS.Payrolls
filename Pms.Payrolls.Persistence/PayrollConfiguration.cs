@@ -11,10 +11,6 @@ namespace Pms.Payrolls.Persistence
         {
             builder.ToTable("payroll").HasKey(ts => ts.PayrollId);
 
-            builder
-                .HasOne(p => p.TS)
-                .WithOne()
-                .HasForeignKey<TimesheetView>("Id");
 
             builder.Property(cc => cc.PayrollId).HasColumnType("VARCHAR(35)").IsRequired();
             builder.Property(cc => cc.CompanyId).HasColumnType("VARCHAR(35)").IsRequired();

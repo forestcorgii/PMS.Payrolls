@@ -8,16 +8,14 @@ namespace Pms.Payrolls.Persistence
     {
         public DbSet<Payroll> Payrolls => Set<Payroll>();
         public DbSet<EmployeeView> Employees => Set<EmployeeView>();
-        public DbSet<TimesheetView> Timesheets => Set<TimesheetView>();
         public DbSet<CompanyView> Companies => Set<CompanyView>();
 
         public PayrollDbContext(DbContextOptions options) : base(options) { }
-         
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new PayrollConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeViewConfiguration());
-            modelBuilder.ApplyConfiguration(new TimesheetViewConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
         }
 

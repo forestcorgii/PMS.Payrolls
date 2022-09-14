@@ -11,8 +11,6 @@ namespace Pms.Payrolls.Domain
     {
         public string PayrollId { get; set; }
 
-        public virtual TimesheetView TS { get; set; }
-
         public string EEId { get; set; }
         public virtual EmployeeView EE { get; set; }
 

@@ -30,7 +30,6 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls
                 .Include(p => p.EE)
-                .Include(p => p.TS)
                 .Where(p => p.CutoffId == cutoffId)
                 .ToList();
         }
@@ -39,7 +38,6 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls
                 .Include(p => p.EE)
-                .Include(p => p.TS)
                 .Where(p => p.CutoffId == cutoffId)
                 .Where(p => p.PayrollCode == payrollCode)
                 .ToList();
@@ -49,7 +47,6 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls
                 .Include(p => p.EE)
-                .Include(p => p.TS)
                 .Where(p => p.YearCovered == yearsCovered)
                 .Where(p => p.CompanyId == companyId)
                 .ToList();
@@ -68,6 +65,14 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             return payrolls;
         }
 
-
+        public IEnumerable<Payroll> GetMonthlyPayrolls(int month, string payrollCode)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Where(p => p.Cutoff.CutoffDate.Month == month)
+                .Where(p => p.PayrollCode == payrollCode)
+                .ToList();
+        }
     }
 }

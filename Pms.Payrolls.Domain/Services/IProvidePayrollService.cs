@@ -9,10 +9,17 @@ namespace Pms.Payrolls.Domain.Services
 {
     public interface IProvidePayrollService
     {
+        /// <summary>
+        /// Used for extracting banks
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Payroll> GetAllPayrolls();
+        
         IEnumerable<Payroll> GetPayrolls(string cutoffId);
         IEnumerable<Payroll> GetPayrolls(string cutoffId,string payrollCode);
         IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId);
-        IEnumerable<Payroll> GetAllPayrolls();
+        
+        IEnumerable<Payroll> GetMonthlyPayrolls(int month,string payrollCode);
         IEnumerable<Payroll> GetNoEEPayrolls();
     }
 }
