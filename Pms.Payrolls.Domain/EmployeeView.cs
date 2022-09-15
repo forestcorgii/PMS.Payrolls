@@ -50,7 +50,6 @@ namespace Pms.Payrolls.Domain
         public string Location { get; private set; }
 
         public string PayrollCode { get; private set; }
-        public string BankCategory { get; private set; }
 
         public string AccountNumber { get; private set; }
         public string CardNumber { get; private set; }
