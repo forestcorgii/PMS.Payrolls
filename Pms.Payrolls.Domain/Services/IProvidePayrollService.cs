@@ -14,12 +14,23 @@ namespace Pms.Payrolls.Domain.Services
         /// </summary>
         /// <returns></returns>
         IEnumerable<Payroll> GetAllPayrolls();
-        
+
+
         IEnumerable<Payroll> GetPayrolls(string cutoffId);
-        IEnumerable<Payroll> GetPayrolls(string cutoffId,string payrollCode);
+
+        IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode);
+
         IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId);
+
+
+        /// <summary>
+        /// Used for generating Government Computation.
+        /// </summary>
+        /// <param name="month"></param>
+        /// <param name="payrollCode"></param>
+        /// <returns></returns>
+        IEnumerable<Payroll> GetMonthlyPayrolls(int month, string payrollCode);
         
-        IEnumerable<Payroll> GetMonthlyPayrolls(int month,string payrollCode);
         IEnumerable<Payroll> GetNoEEPayrolls();
     }
 }
