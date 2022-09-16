@@ -67,10 +67,11 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             if (validayrolls.Length > 0)
             {
                 IRow row;
+                int firstIndex = 8;
                 for (int i = 0; i < validayrolls.Length; i++)
                 {
                     Payroll payroll = validayrolls[i];
-                    row = sheet.CreateRow(i + 8);
+                    row = sheet.CreateRow(i + firstIndex);
                     row.CreateCell(0).SetCellValue(i + 1);
                     row.CreateCell(1).SetCellValue(payroll.EE.LastName);
                     row.CreateCell(2).SetCellValue(payroll.EE.FirstName);
@@ -78,6 +79,16 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                     row.CreateCell(4).SetCellValue(payroll.EE.AccountNumber);
                     row.CreateCell(5).SetCellValue(payroll.NetPay);
                 }
+
+                row = sheet.CreateRow(validayrolls.Length + firstIndex + 6);
+                row.CreateCell(2).SetCellValue("Prepared By:");
+                row.CreateCell(3).SetCellValue("Noted By:");
+                row.CreateCell(4).SetCellValue("Approved By:");
+
+                row = sheet.CreateRow(validayrolls.Length + firstIndex + 8);
+                row.CreateCell(2).SetCellValue("");
+                row.CreateCell(3).SetCellValue("Arlyn C. Esmenda");
+                row.CreateCell(4).SetCellValue("Francis Ann B. Petilla");
             }
         }
 
