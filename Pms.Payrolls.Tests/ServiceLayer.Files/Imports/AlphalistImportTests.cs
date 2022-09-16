@@ -19,7 +19,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Tests
             string birDbfFilepath = @"C:\BIRALPHA70\DATA";
 
             AlphalistImport importer = new();
-            importer.ImportToBIRProgram(alphalistFilepath, birDbfFilepath, company);
+            importer.ImportToBIRProgram(alphalistFilepath, birDbfFilepath, company, 2022);
         }
     }
 }

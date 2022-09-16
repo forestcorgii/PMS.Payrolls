@@ -17,7 +17,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
     public class AlphalistImport
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-        public void ImportToBIRProgram(string alphalistFilepath, string birProgramDataDirectory, CompanyView company)
+        public void ImportToBIRProgram(string alphalistFilepath, string birProgramDataDirectory, CompanyView company, int year)
         {
             IWorkbook workbook;
             using (var alphalistFile = new FileStream(alphalistFilepath, FileMode.Open, FileAccess.Read))
@@ -31,7 +31,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             {
                 IRow row = sheet.GetRow(rowIndex);
                 if (row is not null && row.GetCell(0) is not null)
-                    alphalists.Add(GetDetail(row, company, "D1", sequence));
+                    alphalists.Add(GetDetail(row, company, "D1", year, sequence));
                 else break;
                 sequence++;
             }
@@ -40,7 +40,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             {
                 IRow row = sheet.GetRow(rowIndex);
                 if (row is not null && row.GetCell(0) is not null)
-                    alphalists.Add(GetDetail(row, company, "D2", sequence));
+                    alphalists.Add(GetDetail(row, company, "D2", year, sequence));
                 else break;
                 sequence++;
             }
@@ -85,11 +85,12 @@ namespace Pms.Payrolls.ServiceLayer.Files
             index++;
             return index;
         }
-        private AlphalistDetail GetDetail(IRow row, CompanyView company, string schedule, int sequence)
+        private AlphalistDetail GetDetail(IRow row, CompanyView company, string schedule, int year, int sequence)
         {
             AlphalistDetail alpha = new();
             alpha.EmployerBranchCode = company.BranchCode.ToString("0000");
             alpha.EmployerTin = company.TIN;
+            alpha.ReturnPeriod = DateTime.Parse($"12/31/{year}");
             alpha.ScheduleNumber = schedule;
             alpha.SequenceNumber = sequence;
             alpha.RegisteredName = company.RegisteredName;
@@ -104,7 +105,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             alpha.FirstName = row.GetCell(append(ref columnIndex)).StringCellValue;
             alpha.LastName = row.GetCell(append(ref columnIndex)).StringCellValue;
             alpha.MiddleName = row.GetCell(append(ref columnIndex)).StringCellValue;
-            alpha.Tin = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.Tin = row.GetCell(append(ref columnIndex)).GetValue();
             alpha.StartDate = DateTime.Parse(row.GetCell(append(ref columnIndex)).StringCellValue);
             alpha.ResignationDate = DateTime.Parse(row.GetCell(append(ref columnIndex)).StringCellValue);
             alpha.FactorUsed = (int)row.GetCell(append(ref columnIndex)).NumericCellValue;
@@ -133,9 +134,9 @@ namespace Pms.Payrolls.ServiceLayer.Files
             alpha.PresentNonTaxableHazardPay = row.GetCell(append(ref columnIndex)).NumericCellValue;
             alpha.NonTaxableBasicSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
             alpha.TaxableBasicSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
-            alpha.Nationality = row.GetCell(append(ref columnIndex)).StringCellValue;
-            alpha.ReasonForSeparation = row.GetCell(append(ref columnIndex)).StringCellValue;
-            alpha.EmploymentStatus = row.GetCell(append(ref columnIndex)).StringCellValue;
+            alpha.Nationality = row.GetCell(append(ref columnIndex)).GetValue();
+            alpha.ReasonForSeparation = row.GetCell(append(ref columnIndex)).GetValue();
+            alpha.EmploymentStatus = row.GetCell(append(ref columnIndex)).GetValue();
             //alpha.December = row.GetCell(append(ref columnIndex)).NumericCellValue;
             //alpha.OverWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
 
@@ -248,7 +249,6 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
                 alpha.DateOfDeath,
                 alpha.DateWithheld,
-                ""
             };
         }
         private string[] ConvertValuesToInsertableString(object[] values)
@@ -353,7 +353,6 @@ namespace Pms.Payrolls.ServiceLayer.Files
                 "ATC_DESC",
                 "DATE_DEATH",
                 "DATE_WTHELD",
-                "N_NULLFLAG"
             };
         }
         private string[] GetHeadersMaxLength10()
@@ -458,7 +457,6 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
                 "DATE_DEATH",
                 "DATE_WTHEL",
-                "N_NULLFLAG"
             };
         }
     }
