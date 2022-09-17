@@ -8,6 +8,8 @@ namespace Pms.Payrolls.Domain.SupportTypes
 {
     public class AutomatedAlphalistDetail : IAlphalistDetail
     {
+        public bool valid = true;
+
         #region EMPLOYEE INFORMATION
         private string EEId;
         private string Company;
@@ -161,7 +163,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         #endregion
 
-        public AutomatedAlphalistDetail(IEnumerable<Payroll> yearlyPayrolls, double minimumRate)
+        public AutomatedAlphalistDetail(IEnumerable<Payroll> yearlyPayrolls, double minimumRate, int yearCovered)
         {
             Payroll payroll = yearlyPayrolls.First();
 
@@ -182,74 +184,86 @@ namespace Pms.Payrolls.Domain.SupportTypes
             EmploymentStatus = "R";
             ReasonForSeparation = "";
 
-            StartDate = yearlyPayrolls.First().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
-            ResignationDate = yearlyPayrolls.Last().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
+            Payroll previousDecemberPayroll = yearlyPayrolls.Where(py => py.Cutoff.CutoffDate.Month == 12 && py.Cutoff.CutoffDate.Year < yearCovered).FirstOrDefault();
+            List<Payroll> JanToDecPayrolls = yearlyPayrolls.Where(py => py.Cutoff.CutoffDate.Year == yearCovered).ToList();
+            List<Payroll> PreviousDecToJanPayrolls = yearlyPayrolls.Where(py => py.YearCovered == yearCovered).ToList();
+
+            if (previousDecemberPayroll is null)
+                previousDecemberPayroll = new();
+
+            if (JanToDecPayrolls.Any())
+            {
+                StartDate = JanToDecPayrolls.First().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
+                ResignationDate = JanToDecPayrolls.Last().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
 
 
-            OvertimeAmount = yearlyPayrolls.Sum(py => py.OvertimeAmount);
-            RestDayOvertimeAmount = yearlyPayrolls.Sum(py => py.RestDayOvertimeAmount);
-            PresentNonTaxableHolidayPay = yearlyPayrolls.Sum(py => py.HolidayOvertimeAmount);
-            PresentNonTaxableNightDifferential = yearlyPayrolls.Sum(py => py.NightDifferentialAmount);
+                OvertimeAmount = JanToDecPayrolls.Sum(py => py.OvertimeAmount);
+                RestDayOvertimeAmount = JanToDecPayrolls.Sum(py => py.RestDayOvertimeAmount);
+                PresentNonTaxableHolidayPay = JanToDecPayrolls.Sum(py => py.HolidayOvertimeAmount);
+                PresentNonTaxableNightDifferential = JanToDecPayrolls.Sum(py => py.NightDifferentialAmount);
 
-            GrossPay = yearlyPayrolls.Sum(py => py.GrossPay);
-            //RegularPay = yearlyPayrolls.Sum(py => py.RegularPay);
-            //NetPay = yearlyPayrolls.Sum(py => py.NetPay);
+                GrossPay = JanToDecPayrolls.Sum(py => py.GrossPay);
 
-            EmployeeSSS = yearlyPayrolls.Sum(py => py.EmployeeSSS);
-            EmployeePagibig = yearlyPayrolls.Sum(py => py.EmployeePagibig);
-            EmployeePhilHealth = yearlyPayrolls.Sum(py => py.EmployeePhilHealth);
+                EmployeeSSS = JanToDecPayrolls.Sum(py => py.EmployeeSSS);
+                EmployeePagibig = JanToDecPayrolls.Sum(py => py.EmployeePagibig);
+                EmployeePhilHealth = JanToDecPayrolls.Sum(py => py.EmployeePhilHealth);
 
-            WithholdingTax = yearlyPayrolls.Sum(py => py.WithholdingTax);
-            DecemberTaxWithheld = yearlyPayrolls
-                .Where(py => py.Cutoff.CutoffDate.Month == 12)
-                .Sum(py => py.WithholdingTax);
+                WithholdingTax = JanToDecPayrolls.Sum(py => py.WithholdingTax);
+                valid = true;
+            }
+            else
+                valid = false;
+            DecemberTaxWithheld = previousDecemberPayroll.WithholdingTax;
 
-            PresentNonTaxable13thMonth = yearlyPayrolls.Sum(py => py.AdjustedRegPay) / 12;
+            PresentNonTaxable13thMonth = PreviousDecToJanPayrolls.Sum(py => py.AdjustedRegPay) / 12;
         }
 
         public AlphalistDetail CreateAlphalistDetail()
         {
             AlphalistDetail a = new();
-            a.EEId = EEId;
-            //a.Company = Company;
-            a.FirstName = FirstName;
-            a.LastName = LastName;
-            a.MiddleName = MiddleName;
-            a.Tin = TIN;
-            a.StartDate = DateTime.Parse(StartDate);
-            a.ResignationDate = DateTime.Parse(ResignationDate);
-            a.AcutalAmountWithheld = ActualAmountWithheld;
-            a.FactorUsed = FactorUsed;
-            a.PresentTaxableSalary = PresentTaxableSalary;
-            a.PresentTaxable13thMonth = PresentTaxable13thMonth;
-            a.PresentTaxWithheld = PresentTaxWithheld;
-            a.PresentNonTaxableSalary = PresentNonTaxableSalary;
-            a.PresentNonTaxable13thMonth = PresentNonTaxable13thMonth;
-            a.PresentNonTaxableSssGsisOtherContribution = PresentNonTaxableSssGsisOtherContribution;
-            a.OverWithheld = OverWithheld;
-            a.AmmountWithheldOnDecember = AmmountWithheldOnDecember;
-            a.TaxDue = TaxDue;
-            a.NetTaxableCompensationIncome = NetTaxableCompensationIncome;
-            a.GrossCompensationIncome = GrossCompensationIncome;
-            a.PresentNonTaxableDeMinimis = PresentNonTaxableDeMinimis;
-            a.PresentTotalCompensation = PresentTotalCompensation;
-            a.PresentTotalNonTaxableCompensationIncome = PresentTotalNonTaxableCompensationIncome;
-            a.PresentNonTaxableGrossCompensationIncome = PresentNonTaxableGrossCompensationIncome;
-            a.PresentNonTaxableBasicSmwHour = PresentNonTaxableBasicSmwHour;
-            a.PresentNonTaxableBasicSmwDay = PresentNonTaxableBasicSmwDay;
-            a.PresentNonTaxableBasicSmwMonth = PresentNonTaxableBasicSmwMonth;
-            a.PresentNonTaxableBasicSmwYear = PresentNonTaxableBasicSmwYear;
-            a.PresentNonTaxableHolidayPay = PresentNonTaxableHolidayPay;
-            a.PresentNonTaxableOvertimePay = PresentNonTaxableOvertimePay;
-            a.PresentNonTaxableNightDifferential = PresentNonTaxableNightDifferential;
-            a.PresentNonTaxableHazardPay = PresentNonTaxableHazardPay;
-            a.NonTaxableBasicSalary = NonTaxableBasicSalary;
-            a.TaxableBasicSalary = TaxableBasicSalary;
-            a.Nationality = Nationality;
-            a.ReasonForSeparation = ReasonForSeparation;
-            a.EmploymentStatus = EmploymentStatus;
-            a.December = DecemberTaxWithheld;
-            a.Final = OverWithheld;
+            if (valid)
+            {
+                a.EEId = EEId;
+                //a.Company = Company;
+                a.FirstName = FirstName;
+                a.LastName = LastName;
+                a.MiddleName = MiddleName;
+                a.Tin = TIN;
+                a.StartDate = DateTime.Parse(StartDate);
+                a.ResignationDate = DateTime.Parse(ResignationDate);
+                a.AcutalAmountWithheld = ActualAmountWithheld;
+                a.FactorUsed = FactorUsed;
+                a.PresentTaxableSalary = PresentTaxableSalary;
+                a.PresentTaxable13thMonth = PresentTaxable13thMonth;
+                a.PresentTaxWithheld = PresentTaxWithheld;
+                a.PresentNonTaxableSalary = PresentNonTaxableSalary;
+                a.PresentNonTaxable13thMonth = PresentNonTaxable13thMonth;
+                a.PresentNonTaxableSssGsisOtherContribution = PresentNonTaxableSssGsisOtherContribution;
+                a.OverWithheld = OverWithheld;
+                a.AmmountWithheldOnDecember = AmmountWithheldOnDecember;
+                a.TaxDue = TaxDue;
+                a.NetTaxableCompensationIncome = NetTaxableCompensationIncome;
+                a.GrossCompensationIncome = GrossCompensationIncome;
+                a.PresentNonTaxableDeMinimis = PresentNonTaxableDeMinimis;
+                a.PresentTotalCompensation = PresentTotalCompensation;
+                a.PresentTotalNonTaxableCompensationIncome = PresentTotalNonTaxableCompensationIncome;
+                a.PresentNonTaxableGrossCompensationIncome = PresentNonTaxableGrossCompensationIncome;
+                a.PresentNonTaxableBasicSmwHour = PresentNonTaxableBasicSmwHour;
+                a.PresentNonTaxableBasicSmwDay = PresentNonTaxableBasicSmwDay;
+                a.PresentNonTaxableBasicSmwMonth = PresentNonTaxableBasicSmwMonth;
+                a.PresentNonTaxableBasicSmwYear = PresentNonTaxableBasicSmwYear;
+                a.PresentNonTaxableHolidayPay = PresentNonTaxableHolidayPay;
+                a.PresentNonTaxableOvertimePay = PresentNonTaxableOvertimePay;
+                a.PresentNonTaxableNightDifferential = PresentNonTaxableNightDifferential;
+                a.PresentNonTaxableHazardPay = PresentNonTaxableHazardPay;
+                a.NonTaxableBasicSalary = NonTaxableBasicSalary;
+                a.TaxableBasicSalary = TaxableBasicSalary;
+                a.Nationality = Nationality;
+                a.ReasonForSeparation = ReasonForSeparation;
+                a.EmploymentStatus = EmploymentStatus;
+                a.December = DecemberTaxWithheld;
+                a.Final = OverWithheld;
+            }
 
             return a;
         }

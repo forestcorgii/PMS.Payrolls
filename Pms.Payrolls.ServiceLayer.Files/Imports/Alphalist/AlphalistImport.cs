@@ -90,7 +90,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             AlphalistDetail alpha = new();
             alpha.EmployerBranchCode = company.BranchCode.ToString("0000");
             alpha.EmployerTin = company.TIN;
-            alpha.ReturnPeriod = DateTime.Parse($"12/31/{year}");
+            alpha.ReturnPeriod = DateTime.Parse($"{year}-12-31");
             alpha.ScheduleNumber = schedule;
             alpha.SequenceNumber = sequence;
             alpha.RegisteredName = company.RegisteredName;

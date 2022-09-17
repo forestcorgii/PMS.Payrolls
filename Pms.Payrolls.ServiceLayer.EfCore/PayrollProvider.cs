@@ -33,7 +33,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Where(p => p.CutoffId == cutoffId)
                 .ToList();
         }
-        public IEnumerable<Payroll> GetPayrolls(string cutoffId,string payrollCode)
+        public IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode)
         {
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls
@@ -46,8 +46,11 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
         {
             using PayrollDbContext context = _factory.CreateDbContext();
             return context.Payrolls
-                .Include(p => p.EE)
-                .Where(p => p.YearCovered == yearsCovered)
+                .Include(p => p.EE).ToList()
+                .Where(p =>
+                    p.YearCovered == yearsCovered ||
+                    p.Cutoff.CutoffDate.Year == yearsCovered
+                )
                 .Where(p => p.CompanyId == companyId)
                 .ToList();
         }

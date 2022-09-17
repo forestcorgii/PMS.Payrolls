@@ -18,16 +18,16 @@ namespace Pms.Payrolls.Domain
             Region = region;
         }
 
-        public string CompanyId { get; private set; }
-        public string Site { get; private set; }
-        public string Acronym { get; private set; }
-        public string RegisteredName { get; private set; }
+        public string CompanyId { get; set; }
+        public string Site { get; set; }
+        public string Acronym { get; set; }
+        public string RegisteredName { get; set; }
 
-        public string Region { get; private set; }
-        public string TIN { get; private set; }
-        public int BranchCode { get; private set; }
+        public string Region { get; set; }
+        public string TIN { get; set; }
+        public int BranchCode { get; set; }
 
-        public double MinimumRate { get; private set; }
+        public double MinimumRate { get; set; }
 
         public override string ToString() => CompanyId;
 
