@@ -63,8 +63,12 @@ namespace Pms.Payrolls.Domain
         {
             get
             {
-                double AdjustedRegHours = RegHours - AbsTar;
-                return RegularPay / AdjustedRegHours;
+                if (RegHours > 0 && RegularPay > 0)
+                {
+                    double AdjustedRegHours = RegHours - AbsTar;
+                    return RegularPay / AdjustedRegHours;
+                }
+                return 0;
             }
         }
 

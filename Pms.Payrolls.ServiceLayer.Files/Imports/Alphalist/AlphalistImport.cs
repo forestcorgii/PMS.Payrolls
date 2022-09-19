@@ -30,7 +30,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
             {
                 IRow row = sheet.GetRow(rowIndex);
-                if (row is not null && row.GetCell(0) is not null)
+                if (row is not null && row.GetCell(0) is not null && !string.IsNullOrEmpty(row.GetCell(0).StringCellValue))
                     alphalists.Add(GetDetail(row, company, "D1", year, sequence));
                 else break;
                 sequence++;
@@ -39,7 +39,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
             {
                 IRow row = sheet.GetRow(rowIndex);
-                if (row is not null && row.GetCell(0) is not null)
+                if (row is not null && row.GetCell(0) is not null && !string.IsNullOrEmpty(row.GetCell(0).StringCellValue))
                     alphalists.Add(GetDetail(row, company, "D2", year, sequence));
                 else break;
                 sequence++;

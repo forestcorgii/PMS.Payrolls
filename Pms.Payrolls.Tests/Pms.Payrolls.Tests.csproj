@@ -34,6 +34,9 @@
     <None Update="TESTDATA\AlphalistImportTests\INTERNATIONAL DATA CONVERSION SOLUTIONS INC_2022-Alpha%2814%29.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TESTDATA\AlphalistImportTests\MIDCSI00_2022-Alpha.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TESTDATA\AlphalistImportTests\TEST COMPANY_2022-Alpha%284%29.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

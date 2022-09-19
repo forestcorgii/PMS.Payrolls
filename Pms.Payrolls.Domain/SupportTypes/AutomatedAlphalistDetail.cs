@@ -35,7 +35,17 @@ namespace Pms.Payrolls.Domain.SupportTypes
         private double ActualHourlyRate = 0;
         private double PresentNonTaxableBasicSmwHour = 0;
         private double PresentNonTaxableBasicSmwDay => PresentNonTaxableBasicSmwHour * 8;
-        private double PresentNonTaxableBasicSmwMonth => int.Parse(PresentNonTaxableBasicSmwDay.ToString("0.00").Split(".")[0]) * 24;
+        private double PresentNonTaxableBasicSmwMonth
+        {
+            get
+            {
+                int i = 0;
+                if (int.TryParse(PresentNonTaxableBasicSmwDay.ToString("0.00").Split(".")[0], out i))
+                    return i * 24;
+                else
+                    return i;
+            }
+        }
         private double PresentNonTaxableBasicSmwYear => PresentNonTaxableBasicSmwMonth * 12;
 
         private double OvertimeAmount;
@@ -71,7 +81,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
             {
                 double nonTaxableSalary = GrossPay - (PresentNonTaxable13thMonth + PresentNonTaxableSssGsisOtherContribution);
 
-                if (PresentNonTaxableBasicSmwHour < 70.2)
+                if (PresentNonTaxableBasicSmwHour < 70.25)
                     nonTaxableSalary -= (PresentNonTaxableNightDifferential + OvertimeAmount + RestDayOvertimeAmount + PresentNonTaxableHolidayPay);
 
                 return nonTaxableSalary;
@@ -176,10 +186,10 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
             EmployeeView ee = payroll.EE;
             EEId = ee.EEId;
-            FirstName = ee.FirstName;
-            LastName = ee.LastName;
-            MiddleName = ee.MiddleName;
-            TIN = ee.TIN;
+            FirstName = ee.FirstName.Replace("ñ", "N").Replace("Ñ", "N");
+            LastName = ee.LastName.Replace("ñ", "N").Replace("Ñ", "N");
+            MiddleName = ee.MiddleName.Replace("ñ", "N").Replace("Ñ", "N");
+            TIN = ee.TIN.Replace("-","");
             Nationality = "FILIPINO";
             EmploymentStatus = "R";
             ReasonForSeparation = "";
@@ -214,8 +224,8 @@ namespace Pms.Payrolls.Domain.SupportTypes
             else
                 valid = false;
             DecemberTaxWithheld = previousDecemberPayroll.WithholdingTax;
-
             PresentNonTaxable13thMonth = PreviousDecToJanPayrolls.Sum(py => py.AdjustedRegPay) / 12;
+            GrossPay += PresentNonTaxable13thMonth;
         }
 
         public AlphalistDetail CreateAlphalistDetail()
@@ -264,7 +274,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
                 a.December = DecemberTaxWithheld;
                 a.Final = OverWithheld;
             }
-
+            Console.WriteLine(EEId);
             return a;
         }
     }

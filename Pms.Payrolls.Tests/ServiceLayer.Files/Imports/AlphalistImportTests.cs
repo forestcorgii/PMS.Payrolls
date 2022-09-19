@@ -14,9 +14,9 @@ namespace Pms.Payrolls.ServiceLayer.Files.Tests
         [Fact()]
         public void ShouldImportAlphalistsToBirProgram()
         {
-            CompanyView company = new();
-            string alphalistFilepath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\AlphalistImportTests\INTERNATIONAL DATA CONVERSION SOLUTIONS INC_2022-Alpha(14).xls";
-            string birDbfFilepath = @"C:\BIRALPHA70\DATA";
+            CompanyView company = new("INTERNATIONAL DATA CONVERSION SOLUTIONS INC", "214271279", 0, "VII");
+            string alphalistFilepath = $@"{AppDomain.CurrentDomain.BaseDirectory}\TESTDATA\AlphalistImportTests\MIDCSI00_2022-Alpha.xls";
+            string birDbfFilepath = @"Y:\\DATA";
 
             AlphalistImport importer = new();
             importer.ImportToBIRProgram(alphalistFilepath, birDbfFilepath, company, 2022);
