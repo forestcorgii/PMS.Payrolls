@@ -55,6 +55,15 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .ToList();
         }
 
+        public IEnumerable<Payroll> GetPayrollsByCcompany(string cutoffId, string CompanyId)
+        {
+            using PayrollDbContext context = _factory.CreateDbContext();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .Where(p => p.CutoffId == cutoffId)
+                .Where(p => p.CompanyId == CompanyId)
+                .ToList();
+        }
 
         public IEnumerable<Payroll> GetNoEEPayrolls()
         {
@@ -77,5 +86,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
                 .Where(p => p.PayrollCode == payrollCode)
                 .ToList();
         }
+
+
     }
 }

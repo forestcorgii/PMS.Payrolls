@@ -20,6 +20,8 @@ namespace Pms.Payrolls.Domain.Services
 
         IEnumerable<Payroll> GetPayrolls(string cutoffId, string payrollCode);
 
+        IEnumerable<Payroll> GetPayrollsByCcompany(string cutoffId, string CompanyId);
+
         IEnumerable<Payroll> GetPayrolls(int yearsCovered, string companyId);
 
 
