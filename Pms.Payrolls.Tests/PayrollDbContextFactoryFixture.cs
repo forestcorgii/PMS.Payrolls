@@ -25,7 +25,6 @@ namespace Pms.Payrolls.Tests
                 using (var context = CreateDbContext())
                 {
                     context.Database.Migrate();
-                    TrySeeding(context);
                 }
 
                 _databaseInitialized = true;

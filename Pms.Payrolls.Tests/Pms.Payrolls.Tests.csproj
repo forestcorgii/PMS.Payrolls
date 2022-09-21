@@ -85,6 +85,12 @@
     <None Update="TEMPLATES\template-ZEROS.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TESTDATA\TEMPLATE_Govt_Format.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TESTDATA\TEMPLATE_MACRO.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
