@@ -1,5 +1,6 @@
 ﻿using NPOI.SS.UserModel;
 using Pms.Payrolls.Domain;
+using Pms.Payrolls.Domain.SupportTypes;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,12 +18,14 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
             row.CreateCell(5).SetCellValue(payroll.EmployeePagibig + payroll.EmployeePagibig);// should be employer
         }
 
-        public void WriteTotal(IRow row, IEnumerable<Payroll> payrolls)
+        public void WriteTotal(IRow row, PayrollRegister payrollRegister)
         {
-            row.CreateCell(2).SetCellValue($"TOTAL");
-            row.CreateCell(3).SetCellValue(payrolls.Sum(p => p.EmployeePagibig));
-            row.CreateCell(4).SetCellValue(payrolls.Sum(p => p.EmployeePagibig));// should be employer
-            row.CreateCell(5).SetCellValue(payrolls.Sum(p => p.EmployeePagibig) + payrolls.Sum(p => p.EmployeePagibig));// should be employer
+            
+            row.CreateCell(2).SetCellValue($"{payrollRegister.Name} TOTAL"); 
+            row.CreateCell(3).SetCellValue(payrollRegister.EmployeePhilHealth);
+            row.CreateCell(4).SetCellValue(payrollRegister.EmployeePhilHealth);// should be employer
+            row.CreateCell(5).SetCellValue(payrollRegister.EmployeePhilHealth + payrollRegister.EmployeePhilHealth);// should be employer
+             
         }
     }
 }

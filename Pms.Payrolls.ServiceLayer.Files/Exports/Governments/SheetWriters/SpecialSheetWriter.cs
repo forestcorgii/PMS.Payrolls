@@ -1,5 +1,6 @@
 ﻿using NPOI.SS.UserModel;
 using Pms.Payrolls.Domain;
+using Pms.Payrolls.Domain.SupportTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,8 +71,14 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
         {
             int index = StartIndex;
 
+            PayrollRegister grandPayrollRegister = new("GRAND");
+
+            double grandTotal = 0;
+            int grandTotaRecords = 0;
             foreach (string payrollCode in PayrollsByPayrollAndJobCode.Keys)
             {
+                PayrollRegister payrollRegisterByPayrollCode = new(payrollCode);
+
                 int sequence = 0;
                 sheet.CreateRow(append(ref index)).CreateCell(0).SetCellValue(payrollCode);
                 foreach (string jobCode in PayrollsByPayrollAndJobCode[payrollCode].Keys)
@@ -85,11 +92,23 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
 
                     append(ref index);
                     append(ref index);
-                    IRow rowForTotal = sheet.CreateRow(append(ref index));
 
-                    RowWriter.WriteTotal(rowForTotal, PayrollsByPayrollAndJobCode[payrollCode][jobCode]);
+                    PayrollRegister payrollRegisterByJobCode = new(jobCode, PayrollsByPayrollAndJobCode[payrollCode][jobCode]);
+                    RowWriter.WriteTotal(sheet.CreateRow(append(ref index)), payrollRegisterByJobCode);
+                    payrollRegisterByPayrollCode.Merge(payrollRegisterByJobCode);
+
+                    grandTotaRecords++;
                 }
+
+                append(ref index);
+                RowWriter.WriteTotal(sheet.CreateRow(append(ref index)), payrollRegisterByPayrollCode);
+
+                grandPayrollRegister.Merge(payrollRegisterByPayrollCode);
+                grandTotal += sequence;
             }
+
+            append(ref index);
+            RowWriter.WriteTotal(sheet.CreateRow(append(ref index)), grandPayrollRegister);
         }
 
 

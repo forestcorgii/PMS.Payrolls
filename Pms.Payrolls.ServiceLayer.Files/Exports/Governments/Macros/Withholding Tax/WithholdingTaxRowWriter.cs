@@ -1,5 +1,6 @@
 ﻿using NPOI.SS.UserModel;
 using Pms.Payrolls.Domain;
+using Pms.Payrolls.Domain.SupportTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,13 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
             row.CreateCell(3).SetCellValue(payroll.WithholdingTax);
         }
 
-        public void WriteTotal(IRow row, IEnumerable<Payroll> payrolls)
+        public void WriteTotal(IRow row, PayrollRegister payrollRegister)
         {
-            row.CreateCell(2).SetCellValue($"TOTAL");
-            row.CreateCell(3).SetCellValue(payrolls.Sum(p => p.WithholdingTax));
+
+            row.CreateCell(2).SetCellValue($"{payrollRegister.Name} TOTAL");
+
+            row.CreateCell(3).SetCellValue(payrollRegister.WithholdingTax);
+           
         }
     }
 }

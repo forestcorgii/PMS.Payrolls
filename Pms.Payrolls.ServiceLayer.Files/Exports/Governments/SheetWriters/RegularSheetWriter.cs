@@ -1,5 +1,6 @@
 ﻿using NPOI.SS.UserModel;
 using Pms.Payrolls.Domain;
+using Pms.Payrolls.Domain.SupportTypes;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,7 +35,9 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
             append(ref index);
             append(ref index);
             IRow rowForTotal = sheet.CreateRow(append(ref index));
-            RowWriter.WriteTotal(rowForTotal, Payrolls);
+
+            PayrollRegister payrollRegister = new("GRAND", Payrolls);
+            RowWriter.WriteTotal(rowForTotal, payrollRegister);
         }
 
 
