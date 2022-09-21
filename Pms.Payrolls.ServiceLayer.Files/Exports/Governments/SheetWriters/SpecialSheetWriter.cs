@@ -1,0 +1,102 @@
+﻿using NPOI.SS.UserModel;
+using Pms.Payrolls.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
+{
+    public class SpecialSheetWriter : ISheetWriter
+    {
+        public IRowWriter RowWriter;
+        private readonly int StartIndex;
+        private readonly Dictionary<string, Dictionary<string, List<Payroll>>> PayrollsByPayrollAndJobCode;
+
+        public SpecialSheetWriter(IEnumerable<Payroll> payrolls, IRowWriter rowWriter, int startIndex = 0)
+        {
+            PayrollsByPayrollAndJobCode = new();
+            StartIndex = startIndex;
+            RowWriter = rowWriter;
+
+            initPayrolls(payrolls);
+        }
+
+
+        public SpecialSheetWriter(IEnumerable<Payroll> payrolls, int startIndex = 1)
+        {
+            PayrollsByPayrollAndJobCode = new();
+            StartIndex = startIndex;
+            initPayrolls(payrolls);
+        }
+
+
+        private void initPayrolls(IEnumerable<Payroll> payrolls)
+        {
+            List<List<Payroll>> payrollCodePayrolls = payrolls
+                .GroupBy(p => p.EE.PayrollCode)
+                .Select(pp => pp.ToList())
+                .ToList();
+
+            foreach (List<Payroll> payrollCodePayroll in payrollCodePayrolls)
+            {
+                string payrollCode = payrollCodePayroll.First().EE.PayrollCode;
+                Dictionary<string, List<Payroll>> payrollsByJobCode = payrollCodePayroll
+                    .GroupBy(p => p.EE.JobCode)
+                    .Select(pp =>
+                        pp
+                        .OrderBy(p => p.EE.Fullname)
+                        .ToList()
+                    )
+
+                    .ToDictionary(pp => pp.First().EE.JobCode);
+
+                PayrollsByPayrollAndJobCode.Add(payrollCode, payrollsByJobCode);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        public void Write(ISheet sheet)
+        {
+            int index = StartIndex;
+
+            foreach (string payrollCode in PayrollsByPayrollAndJobCode.Keys)
+            {
+                int sequence = 0;
+                sheet.CreateRow(append(ref index)).CreateCell(0).SetCellValue(payrollCode);
+                foreach (string jobCode in PayrollsByPayrollAndJobCode[payrollCode].Keys)
+                {
+                    append(ref index);
+                    sheet.CreateRow(append(ref index)).CreateCell(0).SetCellValue($"*** Status Code = {jobCode}");
+                    append(ref index);
+
+                    foreach (Payroll payroll in PayrollsByPayrollAndJobCode[payrollCode][jobCode])
+                        RowWriter.Write(sheet.CreateRow(append(ref index)), payroll, append(ref sequence));
+
+                    append(ref index);
+                    append(ref index);
+                    IRow rowForTotal = sheet.CreateRow(append(ref index));
+
+                    RowWriter.WriteTotal(rowForTotal, PayrollsByPayrollAndJobCode[payrollCode][jobCode]);
+                }
+            }
+        }
+
+
+        private static int append(ref int index)
+        {
+            index++;
+            return index;
+        }
+    }
+}
