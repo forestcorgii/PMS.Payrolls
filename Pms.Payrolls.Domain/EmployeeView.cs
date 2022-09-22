@@ -15,6 +15,14 @@ namespace Pms.Payrolls.Domain
         public string MiddleName { get; private set; }
         public string NameExtension { get; private set; } = "";
 
+        public string Pagibig { get; set; }
+        public string PhilHealth { get; set; }
+        public string SSS { get; set; }
+        public string TIN { get; set; }
+        public DateTime BirthDate { get; set; }
+
+        public string MiddleInitial => MiddleName != string.Empty ? MiddleName?[0].ToString() : "";
+
         public string Fullname
         {
             get
@@ -46,8 +54,6 @@ namespace Pms.Payrolls.Domain
             }
         }
 
-
-        public string TIN { get; private set; }
 
         public string Location { get; private set; }
 

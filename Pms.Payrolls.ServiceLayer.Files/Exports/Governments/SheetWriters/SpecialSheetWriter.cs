@@ -12,23 +12,20 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
     public class SpecialSheetWriter : ISheetWriter
     {
         public IRowWriter RowWriter;
-        private readonly int StartIndex;
         private readonly Dictionary<string, Dictionary<string, List<Payroll>>> PayrollsByPayrollAndJobCode;
 
-        public SpecialSheetWriter(IEnumerable<Payroll> payrolls, IRowWriter rowWriter, int startIndex = 0)
+        public SpecialSheetWriter(IEnumerable<Payroll> payrolls, IRowWriter rowWriter)
         {
             PayrollsByPayrollAndJobCode = new();
-            StartIndex = startIndex;
             RowWriter = rowWriter;
 
             initPayrolls(payrolls);
         }
 
 
-        public SpecialSheetWriter(IEnumerable<Payroll> payrolls, int startIndex = 1)
+        public SpecialSheetWriter(IEnumerable<Payroll> payrolls )
         {
             PayrollsByPayrollAndJobCode = new();
-            StartIndex = startIndex;
             initPayrolls(payrolls);
         }
 
@@ -67,9 +64,9 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
 
 
 
-        public void Write(ISheet sheet)
+        public void Write(ISheet sheet, int startIndex = 0)
         {
-            int index = StartIndex;
+            int index = startIndex;
 
             PayrollRegister grandPayrollRegister = new("GRAND");
 
@@ -80,35 +77,35 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
                 PayrollRegister payrollRegisterByPayrollCode = new(payrollCode);
 
                 int sequence = 0;
-                sheet.CreateRow(append(ref index)).CreateCell(0).SetCellValue(payrollCode);
+                sheet.GetOrCreateRow(append(ref index)).GetOrCreateCell(0).SetCellValue(payrollCode);
                 foreach (string jobCode in PayrollsByPayrollAndJobCode[payrollCode].Keys)
                 {
                     append(ref index);
-                    sheet.CreateRow(append(ref index)).CreateCell(0).SetCellValue($"*** Status Code = {jobCode}");
+                    sheet.GetOrCreateRow(append(ref index)).GetOrCreateCell(0).SetCellValue($"*** Status Code = {jobCode}");
                     append(ref index);
 
                     foreach (Payroll payroll in PayrollsByPayrollAndJobCode[payrollCode][jobCode])
-                        RowWriter.Write(sheet.CreateRow(append(ref index)), payroll, append(ref sequence));
+                        RowWriter.Write(sheet.GetOrCreateRow(append(ref index)), payroll, append(ref sequence));
 
                     append(ref index);
                     append(ref index);
 
                     PayrollRegister payrollRegisterByJobCode = new(jobCode, PayrollsByPayrollAndJobCode[payrollCode][jobCode]);
-                    RowWriter.WriteTotal(sheet.CreateRow(append(ref index)), payrollRegisterByJobCode);
+                    RowWriter.WriteTotal(sheet.GetOrCreateRow(append(ref index)), payrollRegisterByJobCode);
                     payrollRegisterByPayrollCode.Merge(payrollRegisterByJobCode);
 
                     grandTotaRecords++;
                 }
 
                 append(ref index);
-                RowWriter.WriteTotal(sheet.CreateRow(append(ref index)), payrollRegisterByPayrollCode);
+                RowWriter.WriteTotal(sheet.GetOrCreateRow(append(ref index)), payrollRegisterByPayrollCode);
 
                 grandPayrollRegister.Merge(payrollRegisterByPayrollCode);
                 grandTotal += sequence;
             }
 
             append(ref index);
-            RowWriter.WriteTotal(sheet.CreateRow(append(ref index)), grandPayrollRegister);
+            RowWriter.WriteTotal(sheet.GetOrCreateRow(append(ref index)), grandPayrollRegister);
         }
 
 

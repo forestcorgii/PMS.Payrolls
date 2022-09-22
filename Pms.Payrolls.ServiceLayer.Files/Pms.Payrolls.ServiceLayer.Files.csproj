@@ -16,8 +16,4 @@
     <ProjectReference Include="..\Pms.Payrolls.Domain\Pms.Payrolls.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Exports\Governments\Loans\" />
-  </ItemGroup>
-
 </Project>

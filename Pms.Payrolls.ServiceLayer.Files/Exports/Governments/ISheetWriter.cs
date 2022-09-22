@@ -4,6 +4,6 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
 {
     public interface ISheetWriter
     {
-        void Write(ISheet sheet);
+        void Write(ISheet sheet, int startIndex = 1);
     }
 }
