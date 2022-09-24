@@ -16,15 +16,22 @@ namespace Pms.Payrolls.ServiceLayer.Files
         private int NameIndex = 1;
         
         private int RegularHoursIndex = 2;
-        private int NightDifferentialIndex = 6;
-        private int WithholdingTaxIndex = 11;
         
         private int GrossPayIndex = 5;
-        private int NetpayIndex = 14;
+        
+        private int NightDifferentialIndex = 6;
 
         private int EmployeePagibigIndex = 7;
+        private int EmployerPagibigIndex = 8;
+        
         private int EmployeeSSSIndex = 9;
-        private int EmployeePhilHealthIndex = 12;
+        private int EmployerSSSIndex = 10;
+        
+        private int EmployeePhilHealthIndex = 11;
+
+        private int WithholdingTaxIndex = 12;
+
+        private int NetpayIndex = 14;
 
         private string PayrollRegisterFilePath;
 
@@ -77,7 +84,11 @@ namespace Pms.Payrolls.ServiceLayer.Files
                         newPayroll.NightDifferential = reader.GetDouble(NightDifferentialIndex);
                         
                         newPayroll.EmployeePagibig= reader.GetDouble(EmployeePagibigIndex);
+                        newPayroll.EmployerPagibig= reader.GetDouble(EmployerPagibigIndex);
+
                         newPayroll.EmployeeSSS= reader.GetDouble(EmployeeSSSIndex);
+                        newPayroll.EmployerSSS= reader.GetDouble(EmployerSSSIndex);
+
                         newPayroll.EmployeePhilHealth= reader.GetDouble(EmployeePhilHealthIndex);
                         
                         newPayroll.WithholdingTax = reader.GetDouble(WithholdingTaxIndex);
@@ -85,54 +96,15 @@ namespace Pms.Payrolls.ServiceLayer.Files
                         newPayroll.NetPay = reader.GetDouble(NetpayIndex);
                         newPayroll.PayrollId = Payroll.GenerateId(newPayroll);
 
-
                         payrolls.Add(newPayroll);
+
                     } while (reader.Read());
                 }
             }
 
             return payrolls;
         }
-        private void FindHeaders(IExcelDataReader reader)
-        {
-            reader.Read();
-            CheckHeaders(reader);
-            reader.Read();
-            CheckHeaders(reader);
-            reader.Read();
-            CheckHeaders(reader);
-            reader.Read();
-        }
-        private void CheckHeaders(IExcelDataReader reader)
-        {
-            FindHeaderColumnIndex(ref EmployeeSSSIndex, "SSS_EE", reader);
-            FindHeaderColumnIndex(ref EmployeePagibigIndex, "ADJUST1", reader);
-            FindHeaderColumnIndex(ref EmployeePhilHealthIndex, "PHIC_EE", reader);
-            FindHeaderColumnIndex(ref EmployeePhilHealthIndex, "PHIC", reader);
-
-            FindHeaderColumnIndex(ref NameIndex, "NAME", reader);
-            FindHeaderColumnIndex(ref RegularHoursIndex, "HRS", reader);
-            FindHeaderColumnIndex(ref GrossPayIndex, "GROSS", reader);
-            FindHeaderColumnIndex(ref NetpayIndex, "NETPAY", reader);
-            FindHeaderColumnIndex(ref NetpayIndex, "NET", reader);
-        }
-
-        private void FindHeaderColumnIndex(ref int index, string header, IExcelDataReader reader)
-        {
-            if (index == -1)
-            {
-                for (int column = 0; column < reader.FieldCount; column++)
-                {
-                    if (reader.GetValue(column) is not null)
-                        if ((reader.GetString(column).Trim().ToUpper() ?? "") == (header ?? ""))
-                        {
-                            index = column;
-                            return;
-                        }
-                }
-                index = -1;
-            }
-        }
+ 
 
         private void FindCutoffDate(IExcelDataReader reader)
         {

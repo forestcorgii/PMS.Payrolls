@@ -11,6 +11,7 @@ using Pms.Payrolls.Persistence;
 using Pms.Payrolls.Domain.Services;
 using Pms.Payrolls.Tests;
 using Pms.Payrolls.ServiceLayer.EfCore;
+using Pms.Payrolls.Domain.SupportTypes;
 
 namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros.Tests
 {
@@ -29,24 +30,24 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros.Tests
         [Fact()]
         public void if_it_does_not_throw_exception()
         {
-            string cutoffId = "2207-2";
+            Cutoff cutoff = new("2207-2");
             string companyId = "MIDCSI00";
-            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrollsByCcompany(cutoffId, companyId);
+            IEnumerable<MonthlyPayroll> payrolls = _payrollProvider.GetMonthlyPayrolls(cutoff.CutoffDate.Month, companyId);
 
-            BenefitsMacroExporter exporter = new(new Cutoff(cutoffId), companyId);
+            BenefitsMacroExporter exporter = new(cutoff, companyId);
             exporter.StartExport(payrolls.ToArray());
         }
 
         [Fact()]
         public void if_b_does_not_throw_exception()
         {
-            string cutoffId = "2207-2";
+            Cutoff cutoff = new("2207-2");
             string companyId = "MIDCSI00";
-            IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrollsByCcompany(cutoffId, companyId);
+            IEnumerable<MonthlyPayroll> payrolls = _payrollProvider.GetMonthlyPayrolls(cutoff.CutoffDate.Month, companyId);
 
-            BenefitsBMacroExporter exporter = new(new Cutoff(cutoffId), companyId);
+            BenefitsBMacroExporter exporter = new(cutoff, companyId);
             exporter.StartExport(payrolls.ToArray());
         }
-         
+
     }
 }
