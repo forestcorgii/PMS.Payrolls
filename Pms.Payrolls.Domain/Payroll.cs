@@ -44,8 +44,14 @@ namespace Pms.Payrolls.Domain
         public double NetPay { get; set; }
 
         public double EmployeeSSS { get; set; }
+        public double EmployerSSS { get; set; }
+
         public double EmployeePhilHealth { get; set; }
+        public double EmployerPhilHealth { get; set; }
+
         public double EmployeePagibig { get; set; }
+        public double EmployerPagibig { get; set; }
+
 
         public double WithholdingTax { get; set; }
 
