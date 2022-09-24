@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pms.Payrolls.Domain.SupportTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace Pms.Payrolls.Domain.Services
         /// <param name="month"></param>
         /// <param name="payrollCode"></param>
         /// <returns></returns>
-        IEnumerable<Payroll> GetMonthlyPayrolls(int month, string payrollCode);
+        IEnumerable<MonthlyPayroll> GetMonthlyPayrolls(int month, string payrollCode);
         
         IEnumerable<Payroll> GetNoEEPayrolls();
     }

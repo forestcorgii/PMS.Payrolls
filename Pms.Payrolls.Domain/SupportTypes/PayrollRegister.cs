@@ -27,13 +27,13 @@ namespace Pms.Payrolls.Domain.SupportTypes
             Name = name;
 
             EmployeeSSS = payrolls.Sum(p => p.EmployeeSSS);
-            EmployerSSS = payrolls.Sum(p => p.EmployeeSSS);
+            EmployerSSS = payrolls.Sum(p => p.EmployerSSS);
 
             EmployeePhilHealth = payrolls.Sum(p => p.EmployeePhilHealth);
-            EmployerPhilHealth = payrolls.Sum(p => p.EmployeePhilHealth);
+            EmployerPhilHealth = payrolls.Sum(p => p.EmployerPhilHealth);
 
             EmployeePagibig = payrolls.Sum(p => p.EmployeePagibig);
-            EmployerPagibig = payrolls.Sum(p => p.EmployeePagibig);
+            EmployerPagibig = payrolls.Sum(p => p.EmployerPagibig);
 
             WithholdingTax = payrolls.Sum(p => p.WithholdingTax);
         }
@@ -41,13 +41,13 @@ namespace Pms.Payrolls.Domain.SupportTypes
         public void Merge(PayrollRegister payrollRegister)
         {
             EmployeeSSS += payrollRegister.EmployeeSSS;
-            EmployerSSS += payrollRegister.EmployeeSSS;
+            EmployerSSS += payrollRegister.EmployerSSS;
 
             EmployeePhilHealth += payrollRegister.EmployeePhilHealth;
-            EmployerPhilHealth += payrollRegister.EmployeePhilHealth;
+            EmployerPhilHealth += payrollRegister.EmployerPhilHealth;
 
             EmployeePagibig += payrollRegister.EmployeePagibig;
-            EmployerPagibig += payrollRegister.EmployeePagibig;
+            EmployerPagibig += payrollRegister.EmployerPagibig;
 
             WithholdingTax += payrollRegister.WithholdingTax;
         }
