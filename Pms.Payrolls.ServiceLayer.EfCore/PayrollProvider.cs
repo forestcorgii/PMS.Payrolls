@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pms.Payrolls.Domain;
 using Pms.Payrolls.Domain.Services;
+using Pms.Payrolls.Domain.SupportTypes;
 using Pms.Payrolls.Persistence;
 using System;
 using System.Collections.Generic;
@@ -77,14 +78,18 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             return payrolls;
         }
 
-        public IEnumerable<Payroll> GetMonthlyPayrolls(int month, string payrollCode)
+        public IEnumerable<MonthlyPayroll> GetMonthlyPayrolls(int month, string payrollCode)
         {
             using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls
-                .Include(p => p.EE)
-                .Where(p => p.Cutoff.CutoffDate.Month == month)
-                .Where(p => p.PayrollCode == payrollCode)
-                .ToList();
+            List<Payroll> payrolls = context.Payrolls.Include(p => p.EE).ToList();
+
+            List<MonthlyPayroll> mpayrolls = payrolls.Where(p => p.Cutoff.CutoffDate.Month == month)
+            .Where(p => p.CompanyId == payrollCode)
+            .GroupBy(p => p.EEId)
+            .Select(p => new MonthlyPayroll(p.ToArray()))
+            .ToList();
+
+            return mpayrolls;
         }
 
 
