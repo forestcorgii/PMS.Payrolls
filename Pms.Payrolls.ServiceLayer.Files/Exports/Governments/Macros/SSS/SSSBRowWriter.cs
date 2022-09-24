@@ -14,7 +14,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
             row.GetOrCreateCell(1).SetCellValue(payroll.EE.LastName);
             row.GetOrCreateCell(2).SetCellValue(payroll.EE.FirstName);
             row.GetOrCreateCell(3).SetCellValue(payroll.EE.MiddleInitial);
-            row.GetOrCreateCell(4).SetCellValue(payroll.EmployeeSSS);// should be employer
+            row.GetOrCreateCell(4).SetCellValue(payroll.EmployerSSS+ payroll.EmployeeSSS);// should be employer
         }
 
         /// <summary>

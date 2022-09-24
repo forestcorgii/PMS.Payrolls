@@ -17,8 +17,8 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
             row.GetOrCreateCell(1).SetCellValue(payroll.EEId);
             row.GetOrCreateCell(2).SetCellValue(payroll.EE.Fullname);
             row.GetOrCreateCell(3).SetCellValue(payroll.EmployeePhilHealth);
-            row.GetOrCreateCell(4).SetCellValue(payroll.EmployeePhilHealth);// should be employer
-            row.GetOrCreateCell(5).SetCellValue(payroll.EmployeePhilHealth + payroll.EmployeePhilHealth);// should be employer
+            row.GetOrCreateCell(4).SetCellValue(payroll.EmployerPhilHealth);// should be employer
+            row.GetOrCreateCell(5).SetCellValue(payroll.EmployerPhilHealth + payroll.EmployeePhilHealth);// should be employer
         }
 
         public void WriteTotal(IRow row, PayrollRegister payrollRegister)
@@ -26,8 +26,8 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
 
             row.GetOrCreateCell(2).SetCellValue($"{payrollRegister.Name} TOTAL");
             row.GetOrCreateCell(3).SetCellValue(payrollRegister.EmployeePhilHealth);
-            row.GetOrCreateCell(4).SetCellValue(payrollRegister.EmployeePhilHealth);// should be employer
-            row.GetOrCreateCell(5).SetCellValue(payrollRegister.EmployeePhilHealth + payrollRegister.EmployeePhilHealth);// should be employer
+            row.GetOrCreateCell(4).SetCellValue(payrollRegister.EmployerPhilHealth);// should be employer
+            row.GetOrCreateCell(5).SetCellValue(payrollRegister.EmployerPhilHealth + payrollRegister.EmployeePhilHealth);// should be employer
 
         }
     }
