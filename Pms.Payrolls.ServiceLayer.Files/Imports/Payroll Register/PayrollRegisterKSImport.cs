@@ -14,24 +14,24 @@ namespace Pms.Payrolls.ServiceLayer.Files
     public class PayrollRegisterKSImport : IImportPayrollService
     {
         private int NameIndex = 1;
-        
+
         private int RegularHoursIndex = 2;
-        
+
         private int GrossPayIndex = 5;
-        
+
         private int NightDifferentialIndex = 6;
 
         private int EmployeePagibigIndex = 7;
         private int EmployerPagibigIndex = 8;
-        
+
         private int EmployeeSSSIndex = 9;
         private int EmployerSSSIndex = 10;
-        
+
         private int EmployeePhilHealthIndex = 11;
 
         private int WithholdingTaxIndex = 12;
 
-        private int NetpayIndex = 14;
+        private int NetpayIndex = 15;
 
         private string PayrollRegisterFilePath;
 
@@ -64,7 +64,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                     do
                     {
                         string eeId = "";
-                        var name_args = ParseEmployeeDetail(reader, 1);
+                        var name_args = ParseEmployeeDetail(reader, NameIndex);
                         if (name_args is null)
                             continue;
                         eeId = name_args[1].Trim();
@@ -77,20 +77,20 @@ namespace Pms.Payrolls.ServiceLayer.Files
                         };
 
                         newPayroll.RegHours = reader.GetDouble(RegularHoursIndex);
-                        
+
                         newPayroll.RegularPay = reader.GetDouble(GrossPayIndex);
                         newPayroll.GrossPay = reader.GetDouble(GrossPayIndex);
-                        
+
                         newPayroll.NightDifferential = reader.GetDouble(NightDifferentialIndex);
-                        
-                        newPayroll.EmployeePagibig= reader.GetDouble(EmployeePagibigIndex);
-                        newPayroll.EmployerPagibig= reader.GetDouble(EmployerPagibigIndex);
 
-                        newPayroll.EmployeeSSS= reader.GetDouble(EmployeeSSSIndex);
-                        newPayroll.EmployerSSS= reader.GetDouble(EmployerSSSIndex);
+                        newPayroll.EmployeePagibig = reader.GetDouble(EmployeePagibigIndex);
+                        newPayroll.EmployerPagibig = reader.GetDouble(EmployerPagibigIndex);
 
-                        newPayroll.EmployeePhilHealth= reader.GetDouble(EmployeePhilHealthIndex);
-                        
+                        newPayroll.EmployeeSSS = reader.GetDouble(EmployeeSSSIndex);
+                        newPayroll.EmployerSSS = reader.GetDouble(EmployerSSSIndex);
+
+                        newPayroll.EmployeePhilHealth = reader.GetDouble(EmployeePhilHealthIndex);
+
                         newPayroll.WithholdingTax = reader.GetDouble(WithholdingTaxIndex);
 
                         newPayroll.NetPay = reader.GetDouble(NetpayIndex);
@@ -104,7 +104,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
             return payrolls;
         }
- 
+
 
         private void FindCutoffDate(IExcelDataReader reader)
         {
