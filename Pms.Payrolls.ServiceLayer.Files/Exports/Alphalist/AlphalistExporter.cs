@@ -16,7 +16,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
         public void StartExport(IEnumerable<AlphalistDetail> alphalists, int year, string companyId,double minimumRate)
         {
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
-            string filePath = $@"{startupPath}\EXPORT\Alphalist";
+            string filePath = $@"{startupPath}\EXPORT\ALPHALIST";
             Directory.CreateDirectory(filePath);
             string filename = $"{companyId}_{year}-Alpha".AppendFile(filePath);
 
