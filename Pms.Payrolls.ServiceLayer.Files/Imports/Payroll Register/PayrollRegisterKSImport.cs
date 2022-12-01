@@ -13,25 +13,29 @@ namespace Pms.Payrolls.ServiceLayer.Files
 {
     public class PayrollRegisterKSImport : IImportPayrollService
     {
-        private int NameIndex = 1;
+        private int NameIndex;
 
-        private int RegularHoursIndex = 2;
+        private int RegularHoursIndex;
 
-        private int GrossPayIndex = 5;
+        private int GrossPayIndex;
 
-        private int NightDifferentialIndex = 6;
+        private int NightDifferentialIndex;
 
-        private int EmployeePagibigIndex = 7;
-        private int EmployerPagibigIndex = 8;
+        private int EmployeePagibigIndex;
+        private int EmployerPagibigIndex;
 
-        private int EmployeeSSSIndex = 9;
-        private int EmployerSSSIndex = 10;
+        private int EmployeeSSSIndex;
+        private int EmployerSSSIndex;
 
-        private int EmployeePhilHealthIndex = 11;
+        private int EmployeePhilHealthIndex;
 
-        private int WithholdingTaxIndex = 12;
+        private int WithholdingTaxIndex;
 
-        private int NetpayIndex = 15;
+        private int Adjust1Index;
+
+        private int Adjust2Index;
+
+        private int NetpayIndex;
 
         private string PayrollRegisterFilePath;
 
@@ -39,8 +43,8 @@ namespace Pms.Payrolls.ServiceLayer.Files
 
         public void ValidatePayRegisterFile()
         {
-
-            if (CutoffDate == default) throw new PayrollRegisterHeaderNotFoundException("Cutoff Date", PayrollRegisterFilePath);
+            if (CutoffDate == default)
+                throw new PayrollRegisterHeaderNotFoundException("Cutoff Date", PayrollRegisterFilePath);
         }
 
 
@@ -55,10 +59,11 @@ namespace Pms.Payrolls.ServiceLayer.Files
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    //FindHeaders(reader);
                     FindCutoffDate(reader);
 
                     ValidatePayRegisterFile();
+
+                    SetHeaderIndexes();
 
                     Cutoff cutoff = new Cutoff(CutoffDate);
                     do
@@ -129,6 +134,28 @@ namespace Pms.Payrolls.ServiceLayer.Files
                 if (payrollDateRaw != "")
                     CutoffDate = DateTime.ParseExact(payrollDateRaw, "dd MMMM yyyy", CultureInfo.InvariantCulture);
             }
+        }
+        private void SetHeaderIndexes()
+        {
+            NameIndex = 1;
+            RegularHoursIndex = 2;
+            GrossPayIndex = 5;
+            NightDifferentialIndex = 6;
+            EmployeePagibigIndex = 7;
+            EmployerPagibigIndex = 8;
+            EmployeeSSSIndex = 9;
+            EmployerSSSIndex = 10;
+            EmployeePhilHealthIndex = 11;
+            WithholdingTaxIndex = 12;
+
+
+            if (CutoffDate.Day == 15) // there is no adjust 1 column on every 15th cutoff
+            {
+                Adjust2Index = 13;
+                NetpayIndex = 14;
+            }
+            else
+                NetpayIndex = 15;
         }
 
         private static string[] ParseEmployeeDetail(IExcelDataReader reader, int nameIdx)

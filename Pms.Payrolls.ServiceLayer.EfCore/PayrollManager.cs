@@ -23,7 +23,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
 
         public void SavePayroll(Payroll payroll)
         {
-            ValidatePayroll(payroll);
+            payroll.Validate();
 
             using PayrollDbContext context = _factory.CreateDbContext();
             if (context.Payrolls.Any(p => p.PayrollId == payroll.PayrollId))
