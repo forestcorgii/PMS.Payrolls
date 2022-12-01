@@ -12,15 +12,15 @@ namespace Pms.Payrolls.Domain.SupportTypes
         public MonthlyPayroll(Payroll[] monthlyPayroll)
         {
             Payroll payroll = monthlyPayroll.First();
-            
+
             EE = payroll.EE;
-            
+
             EEId = payroll.EEId;
             PayrollCode = payroll.PayrollCode;
             CompanyId = payroll.CompanyId;
 
 
-            GrossPay = monthlyPayroll.Sum(p => p.GrossPay);
+            //GrossPay = monthlyPayroll.Sum(p => p.GrossPay); // NOT NEEDED
             RegularPay = monthlyPayroll.Sum(p => p.RegularPay);
             NetPay = monthlyPayroll.Sum(p => p.NetPay);
 
@@ -34,7 +34,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         public void ComputePagibig()
         {
-            EmployeePagibig = GrossPay * 0.02d;
+            EmployeePagibig = RegularPay * 0.02d;
             if (EmployeePagibig >= 21d & EmployeePagibig < 100d)
                 EmployerPagibig = EmployeePagibig;
             else if (EmployeePagibig < 21d)
@@ -45,7 +45,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         public void ComputeSSS()
         {
-            int multiplier = (int)((long)Math.Round(GrossPay * 2d - 2750d) / 500L);
+            int multiplier = (int)((long)Math.Round(RegularPay - 2750d) / 500L);
 
             double ER_rsc = Math.Min(255d + 42.5d * multiplier, 1700d);
             double EE_rsc = Math.Min(135d + 22.5d * multiplier, 900d);
@@ -63,16 +63,16 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         public void ComputePhilHealth()
         {
-            switch (GrossPay)
+            switch (RegularPay)
             {
-                case var @case when @case >= 70000d:
-                    EmployeePhilHealth = 1800;
+                case var @case when @case >= 79999.99:
+                    EmployeePhilHealth = 1600;
                     break;
                 case var case1 when case1 >= 10000.01d:
-                    EmployeePhilHealth = GrossPay * 0.04d;
+                    EmployeePhilHealth = RegularPay * 0.04d / 2;
                     break;
                 case var case2 when case2 <= 10000d:
-                    EmployeePhilHealth = 300;
+                    EmployeePhilHealth = 200;
                     break;
             }
 

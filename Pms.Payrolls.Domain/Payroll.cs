@@ -113,5 +113,11 @@ namespace Pms.Payrolls.Domain
                 return value - (value * 2);
             return value;
         }
+
+        public void Validate()
+        {
+            if (GrossPay == 0) throw new Exception("Payroll have zero gross pay");
+            if (RegularPay == 0) throw new Exception("Payroll have zero regular pay");
+        }
     }
 }
