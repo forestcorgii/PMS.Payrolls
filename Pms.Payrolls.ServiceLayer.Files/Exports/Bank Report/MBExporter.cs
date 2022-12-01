@@ -88,7 +88,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                 row = sheet.CreateRow(validayrolls.Length + firstIndex + 8);
                 row.CreateCell(2).SetCellValue("");
                 row.CreateCell(3).SetCellValue("Arlyn C. Esmenda");
-                row.CreateCell(4).SetCellValue("Francis Ann B. Petilla");
+                row.CreateCell(4).SetCellValue("Frances Ann B. Petilla");
             }
         }
 
