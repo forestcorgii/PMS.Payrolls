@@ -47,7 +47,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments
                         .OrderBy(p => p.EE.Fullname)
                         .ToList()
                     )
-
+                    .OrderBy(p => p.First().EE.JobCode)
                     .ToDictionary(pp => pp.First().EE.JobCode);
 
                 PayrollsByPayrollAndJobCode.Add(payrollCode, payrollsByJobCode);

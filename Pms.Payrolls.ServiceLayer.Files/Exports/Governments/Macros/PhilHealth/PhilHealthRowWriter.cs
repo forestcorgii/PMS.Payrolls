@@ -23,7 +23,6 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
 
         public void WriteTotal(IRow row, PayrollRegister payrollRegister)
         {
-
             row.GetOrCreateCell(2).SetCellValue($"{payrollRegister.Name} TOTAL");
             row.GetOrCreateCell(3).SetCellValue(payrollRegister.EmployeePhilHealth);
             row.GetOrCreateCell(4).SetCellValue(payrollRegister.EmployerPhilHealth);// should be employer

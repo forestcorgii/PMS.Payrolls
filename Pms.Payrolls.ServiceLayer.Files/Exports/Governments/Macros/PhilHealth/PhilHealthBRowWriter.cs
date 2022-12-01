@@ -16,7 +16,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports.Governments.Macros
             row.GetOrCreateCell(3).SetCellValue(payroll.EE.NameExtension);
             row.GetOrCreateCell(4).SetCellValue(payroll.EE.FirstName);
             row.GetOrCreateCell(5).SetCellValue(payroll.EE.MiddleName);
-            row.GetOrCreateCell(6).SetCellValue(payroll.NetPay);
+            row.GetOrCreateCell(6).SetCellValue(payroll.RegularPay);
             row.GetOrCreateCell(7).SetCellValue("");
             row.GetOrCreateCell(8).SetCellValue("");
             row.GetOrCreateCell(9).SetCellValue(payroll.EE.BirthDate);
