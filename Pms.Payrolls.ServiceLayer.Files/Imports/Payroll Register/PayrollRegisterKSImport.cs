@@ -149,12 +149,12 @@ namespace Pms.Payrolls.ServiceLayer.Files
             WithholdingTaxIndex = 12;
 
 
-            if (CutoffDate.Day == 15) // there is no adjust 1 column on every 15th cutoff
-            {
-                Adjust2Index = 13;
-                NetpayIndex = 14;
-            }
-            else
+            //if (CutoffDate.Day == 15) // there is no adjust 1 column on every 15th cutoff
+            //{
+            //    Adjust2Index = 13;
+            //    NetpayIndex = 14;
+            //}
+            //else
                 NetpayIndex = 15;
         }
 

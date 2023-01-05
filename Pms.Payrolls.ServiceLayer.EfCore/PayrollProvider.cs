@@ -22,7 +22,9 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
         public IEnumerable<Payroll> GetAllPayrolls()
         {
             using PayrollDbContext context = _factory.CreateDbContext();
-            return context.Payrolls.ToList();
+            return context.Payrolls
+                .Include(p => p.EE)
+                .ToList();
         }
 
 
@@ -86,6 +88,7 @@ namespace Pms.Payrolls.ServiceLayer.EfCore
             List<MonthlyPayroll> mpayrolls = payrolls.Where(p => p.Cutoff.CutoffDate.Month == month)
             .Where(p => p.CompanyId == payrollCode)
             .GroupBy(p => p.EEId)
+            .Where(p => p.Any(p => p.Cutoff.CutoffDate.Day >= 28))
             .Select(p => new MonthlyPayroll(p.ToArray()))
             .ToList();
 

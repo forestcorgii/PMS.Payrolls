@@ -63,6 +63,8 @@ namespace Pms.Payrolls.Domain
 
         public string AccountNumber { get; private set; }
         public string CardNumber { get; private set; }
+
+        public bool Active { get; private set; }
         public BankChoices Bank { get; private set; }
 
     }

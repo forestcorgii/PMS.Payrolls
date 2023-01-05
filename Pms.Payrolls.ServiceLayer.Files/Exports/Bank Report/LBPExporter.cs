@@ -99,7 +99,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                     row.CreateCell(2).SetCellValue(payroll.EE.Fullname);
                     row.CreateCell(3).SetCellValue(payroll.EE.CardNumber);
                     row.CreateCell(4).SetCellValue(payroll.EE.AccountNumber);
-                    row.CreateCell(5).SetCellValue(payroll.NetPay);
+                    row.CreateCell(5).SetCellValue(Math.Round(payroll.NetPay, 2));
                 }
 
                 //row = sheet.CreateRow(validayrolls.Length+ firstIndex + 2);

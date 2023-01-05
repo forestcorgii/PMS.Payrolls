@@ -32,7 +32,7 @@ namespace Pms.Payrolls.Files.Exports.Tests
         public void ShouldExportInMBFormat()
         {
             string cutoffId = "2209-1";
-            string payrollCode = "P4A";
+            string payrollCode = "L-P4A";
             IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, payrollCode);
 
             BankReportBase exporter = new(cutoffId, payrollCode);
@@ -44,11 +44,18 @@ namespace Pms.Payrolls.Files.Exports.Tests
         public void ShouldExportInLbpCbcChkFormat()
         {
             string cutoffId = "2208-1";
-            string payrollCode = "P1A";
+            string payrollCode = "M-P1A";
             IEnumerable<Payroll> payrolls = _payrollProvider.GetPayrolls(cutoffId, payrollCode);
 
             BankReportBase exporter = new(cutoffId, payrollCode);
             exporter.StartExport(payrolls.ToArray());
+        }
+
+        [Fact()]
+        public void TestCBCHash()
+        {
+            string actualResult = CBCExporter.Hash("112202064690", 7970.63);
+            Assert.Equal("951874019902", actualResult);
         }
 
 

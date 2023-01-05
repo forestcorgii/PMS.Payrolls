@@ -96,6 +96,7 @@ namespace Pms.Payrolls.Domain
                 return RegularPay;
             }
         }
+         
 
 
         public bool IsReadyForExport() => EE is null || EE.AccountNumber == "";

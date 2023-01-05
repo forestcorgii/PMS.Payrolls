@@ -18,7 +18,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             string startupPath = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = $@"{startupPath}\EXPORT\ALPHALIST";
             Directory.CreateDirectory(filePath);
-            string filename = $"{companyId}_{year}-Alpha Verifier";
+            string filename = $"{filePath}\\{companyId}_{year}-Alpha Verifier.xls";
 
             IWorkbook workbook = new HSSFWorkbook();
 
