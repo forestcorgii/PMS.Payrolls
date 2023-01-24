@@ -48,7 +48,11 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         public double FactorUsed { get; set; } = 313;
 
-        public double AcutalAmountWithheld { get; set; }
+
+        public double ActualHourlyRate = 0;
+
+
+        public double ActualAmountWithheld { get; set; }
 
         public double IncomePayment = 0;
 

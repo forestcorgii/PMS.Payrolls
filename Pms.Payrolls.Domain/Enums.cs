@@ -31,12 +31,7 @@ namespace Pms.Payrolls.Domain
             KS = 11
         }
 
-        public enum SiteChoices
-        {
-            MANILA = 1415,
-            LEYTE = 1642,
-        }
-
+        
         public enum AlphalistScheduleNumberChoices
         {
             D1 = 1232,

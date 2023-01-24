@@ -45,9 +45,6 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
                     WriteData(sheet.CreateRow(append(ref rowIndex)), payroll);
 
                 append(ref rowIndex);
-                WriteTotal(sheet.CreateRow(append(ref rowIndex)), employeePayroll);
-                append(ref rowIndex);
-                append(ref rowIndex);
             }
         }
 

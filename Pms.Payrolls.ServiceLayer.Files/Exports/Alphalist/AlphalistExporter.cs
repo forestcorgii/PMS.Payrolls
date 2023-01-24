@@ -23,10 +23,10 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             IWorkbook workbook = new HSSFWorkbook();
 
             ISheet sheet = workbook.CreateSheet("D1");
-            WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour > minimumRate), sheet, AlphalistScheduleNumberChoices.D1);
+            WriteToSheet(alphalists.Where(a => a.ActualHourlyRate > minimumRate), sheet, AlphalistScheduleNumberChoices.D1);
 
             sheet = workbook.CreateSheet("D2");
-            WriteToSheet(alphalists.Where(a => a.PresentNonTaxableBasicSmwHour <= minimumRate), sheet, AlphalistScheduleNumberChoices.D2);
+            WriteToSheet(alphalists.Where(a => a.ActualHourlyRate <= minimumRate), sheet, AlphalistScheduleNumberChoices.D2);
 
             using (var nTemplateFile = new FileStream(filename, FileMode.Create, FileAccess.Write))
                 workbook.Write(nTemplateFile);
@@ -99,7 +99,7 @@ namespace Pms.Payrolls.ServiceLayer.Files.Exports
             row.CreateCell(append(ref index)).SetCellValue(alpha.StartDate.ToString("yyyy-MM-dd"));
             row.CreateCell(append(ref index)).SetCellValue(alpha.ResignationDate.ToString("yyyy-MM-dd"));
             row.CreateCell(append(ref index)).SetCellValue(alpha.FactorUsed);
-            row.CreateCell(append(ref index)).SetCellValue(alpha.AcutalAmountWithheld);
+            row.CreateCell(append(ref index)).SetCellValue(alpha.ActualAmountWithheld);
             row.CreateCell(append(ref index)).SetCellValue(alpha.PresentTaxableSalary);
             row.CreateCell(append(ref index)).SetCellValue(alpha.PresentTaxable13thMonth);
             row.CreateCell(append(ref index)).SetCellValue(alpha.PresentTaxWithheld);

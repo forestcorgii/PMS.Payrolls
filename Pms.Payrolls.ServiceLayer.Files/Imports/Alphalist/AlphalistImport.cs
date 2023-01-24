@@ -109,7 +109,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
             alpha.StartDate = DateTime.Parse(row.GetCell(append(ref columnIndex)).StringCellValue);
             alpha.ResignationDate = DateTime.Parse(row.GetCell(append(ref columnIndex)).StringCellValue);
             alpha.FactorUsed = (int)row.GetCell(append(ref columnIndex)).NumericCellValue;
-            alpha.AcutalAmountWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
+            alpha.ActualAmountWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
             alpha.PresentTaxableSalary = row.GetCell(append(ref columnIndex)).NumericCellValue;
             alpha.PresentTaxable13thMonth = row.GetCell(append(ref columnIndex)).NumericCellValue;
             alpha.PresentTaxWithheld = row.GetCell(append(ref columnIndex)).NumericCellValue;
@@ -174,7 +174,7 @@ namespace Pms.Payrolls.ServiceLayer.Files
                 alpha.ExmpnCode,
                 alpha.FactorUsed,
 
-                alpha.AcutalAmountWithheld,
+                alpha.ActualAmountWithheld,
                 alpha.IncomePayment,
                 alpha.PresentTaxableSalary,
                 alpha.PresentTaxable13thMonth,

@@ -59,11 +59,30 @@ namespace Pms.Payrolls.Domain
                 CutoffId = $"{CutoffDate:yyMM}-13";
             else if (CutoffDate.Day <= 15)
                 CutoffId = $"{CutoffDate:yyMM}-1";
-            else 
+            else
                 CutoffId = $"{CutoffDate:yyMM}-2";
         }
 
 
+
+        public string ToAlphaStartDate()
+        {
+            if (CutoffDate.Day <= 15)
+                return CutoffDate.ToString("01/MM/yyyy");
+            else
+                return CutoffDate.ToString("16/MM/yyyy");
+        }
+
+        public string ToAlphaEndDate()
+        {
+            if (CutoffDate.Month == 2)
+            {
+                int day = DateTime.DaysInMonth(CutoffDate.Year, CutoffDate.Month);
+                return CutoffDate.ToString($"{day:00}/MM/yyyy");
+            }
+            else
+                return CutoffDate.ToString("30/MM/yyyy");
+        }
 
         public override string ToString() => CutoffId;
     }

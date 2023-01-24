@@ -91,12 +91,12 @@ namespace Pms.Payrolls.Domain
             {
                 if (RegHours > 96)
                 {
-                    return Rate * 96;
+                    return Rate * (96 - AbsTar);
                 }
                 return RegularPay;
             }
         }
-         
+
 
 
         public bool IsReadyForExport() => EE is null || EE.AccountNumber == "";

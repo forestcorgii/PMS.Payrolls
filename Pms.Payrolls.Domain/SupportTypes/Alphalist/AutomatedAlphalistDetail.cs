@@ -9,7 +9,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
     public class AutomatedAlphalistDetail : IAlphalistDetail
     {
         public bool valid = true;
-
+        public double MinimumRate;
         #region EMPLOYEE INFORMATION
         private string EEId;
         private string Company;
@@ -32,7 +32,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
         private double PresentTaxable13thMonth;
 
         #region PerDay-specific Properties
-        private double ActualHourlyRate = 0;
+        public double ActualHourlyRate = 0;
         private double PresentNonTaxableBasicSmwHour = 0;
         private double PresentNonTaxableBasicSmwDay => PresentNonTaxableBasicSmwHour * 8;
         private double PresentNonTaxableBasicSmwMonth
@@ -81,7 +81,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
             {
                 double nonTaxableSalary = GrossPay - (PresentNonTaxable13thMonth + PresentNonTaxableSssGsisOtherContribution);
 
-                if (PresentNonTaxableBasicSmwHour < 70.25)
+                if (ActualHourlyRate < MinimumRate)
                     nonTaxableSalary -= (PresentNonTaxableNightDifferential + OvertimeAmount + RestDayOvertimeAmount + PresentNonTaxableHolidayPay);
 
                 return nonTaxableSalary;
@@ -91,9 +91,9 @@ namespace Pms.Payrolls.Domain.SupportTypes
         private double PresentNonTaxableDeMinimis { get; set; } = 0;
 
         private double GrossCompensationIncome => NonTaxableSalary > 250000 ? NonTaxableSalary : 0;
-        private double PresentNonTaxableSalary => GrossCompensationIncome;
+        private double PresentNonTaxableSalary => NonTaxableSalary < 250000 ? NonTaxableSalary : 0;
         private double NetTaxableCompensationIncome => GrossCompensationIncome;
-        private double PresentTotalCompensation => GrossCompensationIncome;
+        private double PresentTotalCompensation => 0;//GrossCompensationIncome;
 
         private double TaxableBasicSalary => NonTaxableSalary > 250000 ? NonTaxableSalary : 0;
 
@@ -111,7 +111,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
         #region TAX
         private double WithholdingTax = 0;
         private double DecemberTaxWithheld = 0;
-        private double PresentTaxWithheld => WithholdingTax - DecemberTaxWithheld;
+        private double PresentTaxWithheld => WithholdingTax - DecemberTaxWithheld;//Jan to November payroll
 
         private double TaxDue
         {
@@ -137,8 +137,9 @@ namespace Pms.Payrolls.Domain.SupportTypes
             }
         }
 
-        private double AmmountWithheldOnDecember
+        private double AmountWithheldOnDecember
         {
+            //get => DecemberTaxWithheld;
             get
             {
                 if (TaxDue > PresentTaxWithheld)
@@ -152,7 +153,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
             get
             {
                 if (TaxDue < PresentTaxWithheld)
-                    return PresentTaxWithheld - TaxDue;
+                    return PresentTaxWithheld + DecemberTaxWithheld - TaxDue;
                 return 0;
             }
         }
@@ -162,9 +163,9 @@ namespace Pms.Payrolls.Domain.SupportTypes
             get
             {
                 if (TaxDue > PresentTaxWithheld)
-                    return PresentTaxWithheld + AmmountWithheldOnDecember;
+                    return PresentTaxWithheld + DecemberTaxWithheld;
                 else
-                    return PresentTaxWithheld - OverWithheld;
+                    return PresentTaxWithheld + DecemberTaxWithheld - OverWithheld;
             }
         }
 
@@ -175,12 +176,11 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         public AutomatedAlphalistDetail(IEnumerable<Payroll> yearlyPayrolls, double minimumRate, int yearCovered)
         {
-            Payroll payroll = yearlyPayrolls.First();
+            Payroll payroll = yearlyPayrolls.Last();
 
             ActualHourlyRate = payroll.Rate;
 
-            PresentNonTaxableBasicSmwHour = payroll.Rate > minimumRate ? payroll.Rate : minimumRate;
-
+            PresentNonTaxableBasicSmwHour = payroll.Rate > minimumRate ? 0 : minimumRate;
 
             FactorUsed = payroll.Rate <= minimumRate ? 313 : 0;
 
@@ -189,28 +189,31 @@ namespace Pms.Payrolls.Domain.SupportTypes
             FirstName = ee.FirstName.Replace("ñ", "N").Replace("Ñ", "N");
             LastName = ee.LastName.Replace("ñ", "N").Replace("Ñ", "N");
             MiddleName = ee.MiddleName.Replace("ñ", "N").Replace("Ñ", "N");
-            TIN = ee.TIN.Replace("-","");
+            TIN = ee.TIN.Replace("-", "");
             Nationality = "FILIPINO";
             EmploymentStatus = "R";
             ReasonForSeparation = "";
 
-            Payroll previousDecemberPayroll = yearlyPayrolls.Where(py => py.Cutoff.CutoffDate.Month == 12 && py.Cutoff.CutoffDate.Year < yearCovered).FirstOrDefault();
+            Payroll previousDecemberPayroll = yearlyPayrolls.Where(py => py.Cutoff.CutoffDate.Month == 12 && py.Cutoff.CutoffDate.Year < yearCovered).LastOrDefault();
+            Payroll currentDecemberPayroll = yearlyPayrolls.Where(py => py.Cutoff.CutoffDate.Month == 12 && py.Cutoff.CutoffDate.Year == yearCovered).LastOrDefault();
             List<Payroll> JanToDecPayrolls = yearlyPayrolls.Where(py => py.Cutoff.CutoffDate.Year == yearCovered).ToList();
             List<Payroll> PreviousDecToJanPayrolls = yearlyPayrolls.Where(py => py.YearCovered == yearCovered).ToList();
 
             if (previousDecemberPayroll is null)
                 previousDecemberPayroll = new();
 
-            if (JanToDecPayrolls.Any())
+            if (JanToDecPayrolls.Any(p => p.Cutoff.CutoffDate.Day > 16))
             {
-                StartDate = JanToDecPayrolls.First().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
-                ResignationDate = JanToDecPayrolls.Last().Cutoff.CutoffDate.ToString("dd/MM/yyyy");
+                StartDate = JanToDecPayrolls.First().Cutoff.ToAlphaStartDate();
+                ResignationDate = JanToDecPayrolls.Last().Cutoff.ToAlphaEndDate();
 
-
-                OvertimeAmount = JanToDecPayrolls.Sum(py => py.OvertimeAmount);
-                RestDayOvertimeAmount = JanToDecPayrolls.Sum(py => py.RestDayOvertimeAmount);
-                PresentNonTaxableHolidayPay = JanToDecPayrolls.Sum(py => py.HolidayOvertimeAmount);
-                PresentNonTaxableNightDifferential = JanToDecPayrolls.Sum(py => py.NightDifferentialAmount);
+                if (PresentNonTaxableBasicSmwHour > 0)
+                {
+                    OvertimeAmount = JanToDecPayrolls.Sum(py => py.OvertimeAmount);
+                    RestDayOvertimeAmount = JanToDecPayrolls.Sum(py => py.RestDayOvertimeAmount);
+                    PresentNonTaxableHolidayPay = JanToDecPayrolls.Sum(py => py.HolidayOvertimeAmount);
+                    PresentNonTaxableNightDifferential = JanToDecPayrolls.Sum(py => py.NightDifferentialAmount);
+                }
 
                 GrossPay = JanToDecPayrolls.Sum(py => py.GrossPay);
 
@@ -223,7 +226,10 @@ namespace Pms.Payrolls.Domain.SupportTypes
             }
             else
                 valid = false;
-            DecemberTaxWithheld = previousDecemberPayroll.WithholdingTax;
+
+            if (currentDecemberPayroll is not null)
+                DecemberTaxWithheld = currentDecemberPayroll.WithholdingTax;
+
             PresentNonTaxable13thMonth = PreviousDecToJanPayrolls.Sum(py => py.AdjustedRegPay) / 12;
             GrossPay += PresentNonTaxable13thMonth;
         }
@@ -241,7 +247,8 @@ namespace Pms.Payrolls.Domain.SupportTypes
                 a.Tin = TIN;
                 a.StartDate = DateTime.Parse(StartDate);
                 a.ResignationDate = DateTime.Parse(ResignationDate);
-                a.AcutalAmountWithheld = ActualAmountWithheld;
+                a.ActualHourlyRate = ActualHourlyRate;
+                a.ActualAmountWithheld = ActualAmountWithheld;
                 a.FactorUsed = FactorUsed;
                 a.PresentTaxableSalary = PresentTaxableSalary;
                 a.PresentTaxable13thMonth = PresentTaxable13thMonth;
@@ -250,7 +257,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
                 a.PresentNonTaxable13thMonth = PresentNonTaxable13thMonth;
                 a.PresentNonTaxableSssGsisOtherContribution = PresentNonTaxableSssGsisOtherContribution;
                 a.OverWithheld = OverWithheld;
-                a.AmmountWithheldOnDecember = AmmountWithheldOnDecember;
+                a.AmmountWithheldOnDecember = AmountWithheldOnDecember;
                 a.TaxDue = TaxDue;
                 a.NetTaxableCompensationIncome = NetTaxableCompensationIncome;
                 a.GrossCompensationIncome = GrossCompensationIncome;
