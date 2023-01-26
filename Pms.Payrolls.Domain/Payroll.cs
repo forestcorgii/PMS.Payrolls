@@ -91,7 +91,7 @@ namespace Pms.Payrolls.Domain
             {
                 if (RegHours > 96)
                 {
-                    return Rate * (96 - AbsTar);
+                    return (RegularPay / RegHours) * 96;
                 }
                 return RegularPay;
             }

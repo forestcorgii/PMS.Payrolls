@@ -61,7 +61,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         #region PAY
         private double GrossPay;
-        //private double RegularPay;
+        private double RegularPay;
         //private double NetPay;
 
         //private double Taxable13thMonth
@@ -79,9 +79,9 @@ namespace Pms.Payrolls.Domain.SupportTypes
         {
             get
             {
-                double nonTaxableSalary = GrossPay - (PresentNonTaxable13thMonth + PresentNonTaxableSssGsisOtherContribution);
+                double nonTaxableSalary = GrossPay - PresentNonTaxableSssGsisOtherContribution;
 
-                if (ActualHourlyRate < MinimumRate)
+                if (ActualHourlyRate <= MinimumRate)
                     nonTaxableSalary -= (PresentNonTaxableNightDifferential + OvertimeAmount + RestDayOvertimeAmount + PresentNonTaxableHolidayPay);
 
                 return nonTaxableSalary;
@@ -92,13 +92,14 @@ namespace Pms.Payrolls.Domain.SupportTypes
 
         private double GrossCompensationIncome => NonTaxableSalary > 250000 ? NonTaxableSalary : 0;
         private double PresentNonTaxableSalary => NonTaxableSalary < 250000 ? NonTaxableSalary : 0;
+
         private double NetTaxableCompensationIncome => GrossCompensationIncome;
         private double PresentTotalCompensation => 0;//GrossCompensationIncome;
 
         private double TaxableBasicSalary => NonTaxableSalary > 250000 ? NonTaxableSalary : 0;
 
-        private double PresentTotalNonTaxableCompensationIncome => NonTaxableSalary + PresentNonTaxable13thMonth + PresentNonTaxableSssGsisOtherContribution;
-        private double PresentNonTaxableGrossCompensationIncome => NonTaxableSalary + PresentNonTaxable13thMonth + PresentNonTaxableSssGsisOtherContribution;
+        private double PresentTotalNonTaxableCompensationIncome => GrossPay + PresentNonTaxable13thMonth;
+        private double PresentNonTaxableGrossCompensationIncome => GrossPay + PresentNonTaxable13thMonth;
         #endregion
 
         #region PresentNonTaxableSssGsisOtherContribution
@@ -177,7 +178,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
         public AutomatedAlphalistDetail(IEnumerable<Payroll> yearlyPayrolls, double minimumRate, int yearCovered)
         {
             Payroll payroll = yearlyPayrolls.Last();
-
+            MinimumRate = minimumRate;
             ActualHourlyRate = payroll.Rate;
 
             PresentNonTaxableBasicSmwHour = payroll.Rate > minimumRate ? 0 : minimumRate;
@@ -216,6 +217,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
                 }
 
                 GrossPay = JanToDecPayrolls.Sum(py => py.GrossPay);
+                RegularPay = JanToDecPayrolls.Sum(py => py.RegularPay);
 
                 EmployeeSSS = JanToDecPayrolls.Sum(py => py.EmployeeSSS);
                 EmployeePagibig = JanToDecPayrolls.Sum(py => py.EmployeePagibig);
@@ -231,7 +233,7 @@ namespace Pms.Payrolls.Domain.SupportTypes
                 DecemberTaxWithheld = currentDecemberPayroll.WithholdingTax;
 
             PresentNonTaxable13thMonth = PreviousDecToJanPayrolls.Sum(py => py.AdjustedRegPay) / 12;
-            GrossPay += PresentNonTaxable13thMonth;
+            //GrossPay += PresentNonTaxable13thMonth;
         }
 
         public AlphalistDetail CreateAlphalistDetail()
